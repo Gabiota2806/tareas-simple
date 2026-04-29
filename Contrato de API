@@ -1,0 +1,61 @@
+# 📡 Contrato de API y Definición de Rutas
+
+Este documento establece cómo se comunican las vistas de Frontend (Blade) con el servidor de Laravel 13.5.
+
+## 🛡️ Reglas de Comunicación
+* **Seguridad:** Todas las peticiones POST, PATCH y DELETE deben incluir la directiva `@csrf`.
+* **Autenticación:** Las rutas de tareas están protegidas por el middleware `auth`.
+* **Formato de Variables:** Los inputs del formulario deben coincidir con las claves del JSON.
+
+---
+
+## 🚀 Definición de Rutas (Endpoints)
+
+### Módulo de Autenticación
+* `GET /login`: Muestra la vista de acceso.
+* `POST /login`: Procesa las credenciales de entrada.
+* `POST /logout`: Finaliza la sesión del usuario.
+
+### Módulo de Tareas
+| Método | Ruta | Acción | Inputs requeridos |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/tasks` | Ver listado | Ninguno (Filtra por usuario logueado). |
+| **POST** | `/tasks` | Crear | `title`, `priority`, `parent_id` (opcional). |
+| **PATCH** | `/tasks/{id}`| Actualizar | `is_completed` (boolean). |
+| **DELETE**| `/tasks/{id}`| Borrar | `id` (parámetro de URL). |
+
+### Módulo de Categorías
+* `GET /categories`: Lista las categorías del usuario.
+* `POST /categories`: Crea una nueva categoría.
+* `DELETE /categories/{id}`: Borra una categoría.
+
+---
+
+## 📦 Formatos de Envío (Payloads)
+
+### Crear Tarea Principal (Task)
+```json
+{
+  "title": "Maquetar la barra lateral",
+  "description": "Incluir el botón de cerrar sesión",
+  "priority": "high",
+  "category_id": 5,
+  "parent_id": null
+}
+
+## Crear Sub-Tarea (Sub-task)
+```json
+{
+  "title": "Agregar icono de usuario",
+  "priority": "medium",
+  "parent_id": 105 // Reemplazar por el ID de la tarea padre
+}
+
+## Respuesta de Error (Validación)
+```json
+{
+  "message": "The title field is required.",
+  "errors": {
+    "title": ["El campo título es obligatorio."]
+  }
+}
