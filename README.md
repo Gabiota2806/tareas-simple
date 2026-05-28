@@ -1,41 +1,57 @@
-# 📋 Sistema de Gestión de Tareas (To-Do List) - v2.0
+# 📋 UniTask: Sistema de Gestión de Tareas Académicas
 
-Aplicación web cliente-servidor desarrollada como práctica para la materia **Metodología de Sistemas I**. El objetivo del sistema es permitir a los usuarios organizar sus actividades pendientes mediante una interfaz moderna, responsiva e intuitiva.
-
-Esta versión representa una migración arquitectónica hacia un entorno de trabajo profesional utilizando el stack Laravel + MySQL.
-
-## 🛠️ Arquitectura y Tecnologías
-
-El proyecto está dividido en sub-equipos ágiles y utiliza el siguiente stack tecnológico:
-
-* **Backend & API:** Laravel (PHP)
-* **Base de Datos:** MySQL
-* **Frontend:** Motor de plantillas Blade (Laravel), HTML5, CSS3 / Framework CSS (Gestionado vía Vite/NPM).
-* **Control de Versiones:** Git & GitHub
-
-## 🎯 Requerimientos del Sistema (Product Backlog)
-
-** Dificultad:  ⚔️ Normal (Refactorización a Framework)
-
-* [ ] Como usuario quiero registrar mis tareas pendientes para organizarme mejor.
-* [ ] Como usuario quiero eliminar las tareas que ya finalizaron.
-* [ ] Como usuario quiero agregar niveles de prioridad a cada tarea.
-* [ ] Como usuario quiero una interfaz moderna y responsiva (UX/UI optimizada).
+Bienvenido a la versión profesional de **UniTask**, desarrollada por el equipo **DevFusion** para la materia *Metodología de Sistemas I* (UTN FRRE - Sede Formosa, 2026). 
 
 ---
 
-## 🚀 Guía de Instalación para el Equipo (Scaffolding)
+## 🌳 Estándares de Git y Flujo de Trabajo
+Para garantizar la integridad del código, el equipo debe seguir estrictamente estas reglas de nomenclatura:
 
-Para que todos los miembros del equipo (Frontend y Backend) puedan correr este proyecto en sus computadoras locales, deben seguir estos pasos estrictamente:
+### Prefijos de Ramas
+Toda rama de trabajo debe nacer de `backend-main` o `frontend-main` y nombrarse con el formato: `tipo/nro-tarea-descripcion`.
 
-### Requisitos previos:
-* Tener instalado **PHP** y **Composer**.
-* Tener instalado **Node.js** y **NPM**.
-* Tener un servidor de base de datos **MySQL** (XAMPP, Laragon, MySQL Workbench, etc.).
+| Prefijo | Propósito | Ejemplo |
+| :--- | :--- | :--- |
+| `feat/` | Nuevas funcionalidades | `feat/UT-T-3.1-registro-tareas` |
+| `fix/` | Corrección de errores | `fix/UT-T-4.2-error-prioridad` |
+| `docs/` | Cambios en documentación | `docs/UT-T-1.2-update-readme` |
+| `refactor/` | Mejora de código sin cambios funcionales | `refactor/UT-T-5.1-limpieza-css` |
+| `test/` | Pruebas unitarias o QA | `test/UT-T-7.1-qa-logic` |
 
-### Pasos de instalación:
+### Reglas de Oro
+1. **No Commits Directos:** Está prohibido hacer commits directos a `main`, `develop`, `backend-main` o `frontend-main`.
+2. **Pull Requests (PR):** Todo cambio debe ser revisado y aprobado por el líder del sub-equipo antes de ser integrado.
+3. **Sincronización:** Antes de empezar a trabajar, asegúrate de estar en tu rama base y ejecutar `git pull`.
 
-1. **Clonar y sincronizar el repositorio:**
-   Si ya tienes el repositorio clonado, asegúrate de estar en la rama principal y trae los últimos cambios:
+---
+
+## 🛠️ Tecnologías y Stack
+* **Backend:** Laravel 13.5 (PHP)
+* **Base de Datos:** MySQL (unitask_db)
+* **Frontend:** Blade Templates + Tailwind CSS (vía Vite)
+* **Control de Versiones:** Git + GitHub (con Rulesets avanzados)
+
+---
+
+## ⚙️ Guía de Inicio para el Equipo
+
+1. **Clonar el repositorio:**
    ```bash
-   git pull origin main
+   git clone [url-del-repo]
+   cd unitask
+
+---
+
+## 🚀 Sprint 1
+El estado de la infraestructura técnica es el siguiente:
+
+- [x] **Inicialización del Repositorio:** Repositorio central creado y colaboradores invitados.
+- [x] **Seguridad y Calidad:** Reglas de protección de rama `main` activas (Pull Requests obligatorios).
+- [x] **Scaffolding de Backend:** Instalación base de Laravel realizada con éxito en la rama `develop`.
+- [x] **Arquitectura de Ramas:** Estructura de `develop`, `backend-main` y `frontend-main` configurada con Rulesets delegados.
+- [ ] **Definir el Layout Base (Mobile First):** paleta de colores corporativa y tipografía oficial.
+- [ ] **Diseño de "Task Cards":** con indicadores visuales de prioridad (colores laterales).
+- [ ] **Mockup interactivo del formulario:** "Agregar Tarea" y selector de prioridades.
+- [ ] **Diseñar el Diagrama de Entidad-Relación (DER):** con tipos de datos (BigInt, String) y claves foráneas.
+- [ ] **Definir el Diccionario:** de Datos con nomenclatura estándar en inglés (snake_case).
+- [ ] **Redactar el Contrato de API (CONTRATO_API.md):** con las estructuras JSON de entrada y salida.
