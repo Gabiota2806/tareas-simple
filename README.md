@@ -52,6 +52,6 @@ El estado de la infraestructura técnica es el siguiente:
 - [ ] **Definir el Layout Base (Mobile First):** paleta de colores corporativa y tipografía oficial.
 - [ ] **Diseño de "Task Cards":** con indicadores visuales de prioridad (colores laterales).
 - [ ] **Mockup interactivo del formulario:** "Agregar Tarea" y selector de prioridades.
-- [ ] **Diseñar el Diagrama de Entidad-Relación (DER):** con tipos de datos (BigInt, String) y claves foráneas.
-- [ ] **Definir el Diccionario:** de Datos con nomenclatura estándar en inglés (snake_case).
-- [ ] **Redactar el Contrato de API (CONTRATO_API.md):** con las estructuras JSON de entrada y salida.
+- [x] **Diseñar el Diagrama de Entidad-Relación (DER):** con tipos de datos (BigInt, String) y claves foráneas.
+- [x] **Definir el Diccionario:** de Datos con nomenclatura estándar en inglés (snake_case).
+- [x] **Redactar el Contrato de API (CONTRATO_API.md):** con las estructuras JSON de entrada y salida.
