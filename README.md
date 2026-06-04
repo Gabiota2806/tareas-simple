@@ -49,9 +49,9 @@ El estado de la infraestructura técnica es el siguiente:
 - [x] **Seguridad y Calidad:** Reglas de protección de rama `main` activas (Pull Requests obligatorios).
 - [x] **Scaffolding de Backend:** Instalación base de Laravel realizada con éxito en la rama `develop`.
 - [x] **Arquitectura de Ramas:** Estructura de `develop`, `backend-main` y `frontend-main` configurada con Rulesets delegados.
-- [ ] **Definir el Layout Base (Mobile First):** paleta de colores corporativa y tipografía oficial.
-- [ ] **Diseño de "Task Cards":** con indicadores visuales de prioridad (colores laterales).
-- [ ] **Mockup interactivo del formulario:** "Agregar Tarea" y selector de prioridades.
+- [x] **Definir el Layout Base (Mobile First):** paleta de colores corporativa y tipografía oficial.
+- [x] **Diseño de "Task Cards":** con indicadores visuales de prioridad (colores laterales).
+- [x] **Mockup interactivo del formulario:** "Agregar Tarea" y selector de prioridades.
 - [x] **Diseñar el Diagrama de Entidad-Relación (DER):** con tipos de datos (BigInt, String) y claves foráneas.
 - [x] **Definir el Diccionario:** de Datos con nomenclatura estándar en inglés (snake_case).
 - [x] **Redactar el Contrato de API (CONTRATO_API.md):** con las estructuras JSON de entrada y salida.
