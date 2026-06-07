@@ -30,10 +30,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relación 1:N: un usuario puede tener varias universidades.
+     * Esta relación se usa para acceder a las universidades creadas por el usuario.
+     */
     public function universities(): HasMany
     {
         return $this->hasMany(University::class);
     }
+
+    /**
+     * Relación 1:N: un usuario puede tener varias carreras.
+     * Permite consultar las carreras asociadas al usuario directamente.
+     */
     public function careers(): HasMany
     {
         return $this->hasMany(Career::class);

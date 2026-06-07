@@ -8,17 +8,18 @@
         public function up(): void                                                                                                                                    
         {                                                                                                                                                             
             Schema::create('universities', function (Blueprint $table) {                                                                                              
-                $table->id();                                                                                                                                         
-                // Llave foránea hacia el usuario dueño de esta universidad                                                                                           
-                $table->foreignId('user_id')->constrained()->cascadeOnDelete();                                                                                       
-                                                                                                                                                                      
-                // Campos de datos                                                                                                                                    
-                $table->string('name', 150); // ej. "Universidad Tecnológica Nacional"                                                                                
-                $table->string('acronym', 20)->nullable(); // ej. "UTN" (Opcional)                                                                                    
-                                                                                                                                                                      
-                $table->timestamps();                                                                                                                                 
-            });                                                                                                                                                       
-        }                                                                                                                                                             
+                // Identificador único de cada universidad
+                $table->id();
+
+                // Llave foránea hacia el usuario dueño de esta universidad.
+                // Si el usuario se elimina, todas sus universidades se eliminan en cascada.
+                $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+                // Campos principales de la entidad "universidad"
+                $table->string('name', 150); // ej. "Universidad Tecnológica Nacional"
+                $table->string('acronym', 20)->nullable(); // ej. "UTN" (opcional)
+
+                // Control de creación y actualización de registros
                                                                                                                                                                       
         public function down(): void                                                                                                                                  
         {                                                                                                                                                             
