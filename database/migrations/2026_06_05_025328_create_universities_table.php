@@ -20,9 +20,13 @@
                 $table->string('acronym', 20)->nullable(); // ej. "UTN" (opcional)
 
                 // Control de creación y actualización de registros
-                                                                                                                                                                      
-        public function down(): void                                                                                                                                  
-        {                                                                                                                                                             
-            Schema::dropIfExists('universities');                                                                                                                     
-        }                                                                                                                                                             
+                $table->timestamps();
+            });
+
+        }
+
+        public function down(): void
+        {
+            Schema::dropIfExists('universities');
+        }
     };
