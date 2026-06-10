@@ -14,7 +14,7 @@ Este documento centraliza los endpoints y estructuras JSON que el Frontend y Bac
 
 ---
 
-## 🔐 1. Módulo de Autenticación y Perfil (Laravel Breeze)
+## 🔐 2. Módulo de Autenticación y Perfil (Laravel Breeze)
 
 Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe consumir estas rutas web estandarizadas.
 
@@ -27,16 +27,16 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 
 ---
 
-## 🏛️ 2. Módulo Institucional (Universidades y Carreras)
+## 🏛️ 3. Módulo Institucional (Universidades y Carreras)
 
 | Método | Endpoint | Descripción | Body JSON |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/universities` | Listar universidades del usuario | Ninguno |
-| `POST` | `/api/universities` | Crear universidad | `name`, `acronym` |
-| `GET` | `/api/careers` | Listar carreras del usuario | Ninguno |
-| `POST` | `/api/careers` | Crear carrera | `name`, `duration_years`, `university_id` |
+| `GET` | `/universities` | Listar universidades del usuario | Ninguno |
+| `POST` | `/universities` | Crear universidad | `name`, `acronym` |
+| `GET` | `/careers` | Listar carreras del usuario | Ninguno |
+| `POST` | `/careers` | Crear carrera | `name`, `duration_years`, `university_id` |
 
-### 2.1 Payload: Crear Universidad (Request POST /api/universities)
+### 3.1 Payload: Crear Universidad (Request POST /universities)
 ```json
 {
   "name": "Universidad Tecnológica Nacional",
@@ -44,7 +44,7 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 }
 ```
 
-### 2.2 Payload: Crear Carrera (Request POST /api/careers)
+### 3.2 Payload: Crear Carrera (Request POST /careers)
 ```json
 {
   "name": "Tecnicatura Universitaria en Programación",
@@ -55,27 +55,27 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 
 ---
 
-## 📚 3. Módulo Académico (Materias / Subjects)
+## 📚 4. Módulo Académico (Materias / Subjects)
 
 | Método | Endpoint | Descripción | Body JSON |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/subjects` | Obtener todas las materias del usuario | Ninguno |
-| `POST` | `/api/subjects` | Crear una nueva materia | `name`, `teacher`, `classroom`, `color_identificador`, `career_id` |
-| `PATCH` | `/api/subjects/{id}` | Alternar estado (activo/inactivo) | `is_active` |
-| `DELETE` | `/api/subjects/{id}` | Eliminar materia lógicamente | Ninguno |
+| `GET` | `/subjects` | Obtener todas las materias del usuario | Ninguno |
+| `POST` | `/subjects` | Crear una nueva materia | `name`, `teacher`, `classroom`, `color_code`, `career_id` |
+| `PATCH` | `/subjects/{id}` | Alternar estado (activo/inactivo) | `is_active` |
+| `DELETE` | `/subjects/{id}` | Eliminar materia lógicamente | Ninguno |
 
-### 3.1 Payload: Crear Materia (Request POST /api/subjects)
+### 4.1 Payload: Crear Materia (Request POST /subjects)
 ```json
 {
   "name": "Sistemas de Bases de Datos",
   "teacher": "Ing. Carlos Pérez",
   "classroom": "Laboratorio 3",
-  "color_identificador": "#4CAF50",
+  "color_code": "#4CAF50",
   "career_id": 1
 }
 ```
 
-### 3.2 Payload: Listar Materias (Response GET /api/subjects)
+### 4.2 Payload: Listar Materias (Response GET /subjects)
 ```json
 [
   {
@@ -83,7 +83,7 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
     "name": "Sistemas de Bases de Datos",
     "teacher": "Ing. Carlos Pérez",
     "classroom": "Laboratorio 3",
-    "color_identificador": "#4CAF50",
+    "color_code": "#4CAF50",
     "is_active": true
   },
   {
@@ -91,7 +91,7 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
     "name": "Ingeniería de Software",
     "teacher": "Lic. Ana Gómez",
     "classroom": "Aula 102",
-    "color_identificador": "#FF9800",
+    "color_code": "#FF9800",
     "is_active": false
   }
 ]
@@ -99,16 +99,16 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 
 ---
 
-## 📝 4. Módulo de Tareas (Tasks)
+## 📝 5. Módulo de Tareas (Tasks)
 
 | Método | Endpoint | Descripción | Body JSON |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/tasks` | Listar todas las tareas (de materias activas) | Ninguno |
-| `POST` | `/api/tasks` | Crear nueva tarea | `title`, `description`, `task_type`, `priority`, `subject_id`, `due_date` |
-| `PATCH` | `/api/tasks/{id}` | Marcar como completada / Editar | `is_completed` u otros campos |
-| `DELETE` | `/api/tasks/{id}` | Eliminar tarea | Ninguno |
+| `GET` | `/tasks` | Listar todas las tareas (de materias activas) | Ninguno |
+| `POST` | `/tasks` | Crear nueva tarea | `title`, `description`, `task_type`, `priority`, `subject_id`, `due_date` |
+| `PATCH` | `/tasks/{id}` | Marcar como completada / Editar | `is_completed` u otros campos |
+| `DELETE` | `/tasks/{id}` | Eliminar tarea | Ninguno |
 
-### 4.1 Payload: Crear Tarea Principal (Request POST /api/tasks)
+### 5.1 Payload: Crear Tarea Principal (Request POST /tasks)
 ```json
 {
   "title": "Entrega de Prototipo MVP",
@@ -122,7 +122,7 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 ```
 *(Valores permitidos: `task_type` admite 'parcial', 'final', 'tp', 'normal'. `priority` admite 'high', 'medium', 'low').*
 
-### 4.2 Payload: Listar Tareas (Response GET /api/tasks)
+### 5.2 Payload: Listar Tareas (Response GET /tasks)
 ```json
 [
   {
@@ -137,14 +137,14 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
     "parent_id": null,
     "subject": {
        "name": "Sistemas de Bases de Datos",
-       "color_identificador": "#4CAF50"
+       "color_code": "#4CAF50"
     }
   }
 ]
 ```
 *(Nota: El Backend adjunta el objeto anidado `subject` resumido para que el Frontend pueda pintar el borde de la tarjeta con el color correspondiente sin hacer dobles consultas).*
 
-### 4.3 Payload: Completar Tarea Asíncrona (Request PATCH /api/tasks/{id})
+### 5.3 Payload: Completar Tarea Asíncrona (Request PATCH /tasks/{id})
 ```json
 {
   "is_completed": true
@@ -153,13 +153,13 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 
 ---
 
-## 📅 5. Módulo Calendario (FullCalendar)
+## 📅 6. Módulo Calendario (FullCalendar)
 
 | Método | Endpoint | Descripción | Body JSON |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/calendar/events` | Listado adaptado para el formato nativo de FullCalendar | Ninguno |
+| `GET` | `/calendar/events` | Listado adaptado para el formato nativo de FullCalendar | Ninguno |
 
-### 5.1 Payload: Eventos de Calendario (Response GET /api/calendar/events)
+### 6.1 Payload: Eventos de Calendario (Response GET /calendar/events)
 ```json
 [
   {
@@ -174,11 +174,10 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
   }
 ]
 ```
-*(Nota: Al usar `start` y `color` nativamente, el frontend inyecta esto directo en FullCalendar sin tener que parsearlo).*
 
 ---
 
-## ❌ 6. Respuestas de Error Estándar (HTTP 422 Unprocessable Entity)
+## ❌ 7. Respuestas de Error Estándar (HTTP 422 Unprocessable Entity)
 
 Toda validación fallida del Backend devolverá este formato estándar de Laravel:
 

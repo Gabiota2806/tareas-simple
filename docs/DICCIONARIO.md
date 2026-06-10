@@ -64,7 +64,7 @@ Materias o asignaturas que el usuario cursa.
 | `name` | VARCHAR(150) | NOT NULL | Nombre de la materia. |
 | `teacher` | VARCHAR(150) | NULL | Docente a cargo. |
 | `classroom` | VARCHAR(50) | NULL | Aula física o virtual. |
-| `color_identificador`| VARCHAR(7) | NOT NULL | Color HEX para UI (Ej: #FF5722). |
+| `color_code`| VARCHAR(7) | NOT NULL | Color HEX para UI (Ej: #FF5722). |
 | `is_active` | BOOLEAN | DEFAULT 1 | Vigencia (0 = Histórica, 1 = Cursando). |
 | `created_at` | TIMESTAMP | NULL | Fecha de creación. |
 | `updated_at` | TIMESTAMP | NULL | Última modificación. |
