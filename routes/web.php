@@ -27,10 +27,11 @@ Route::get('/subjects', function(){
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/universities', [UniversityController::class, 'index']);
     Route::post('/universities', [UniversityController::class, 'store']);
 });
 
 Route::middleware('auth')->group(function () {
-    Route::post('/universities', [UniversityController::class, 'store']);
+    Route::get('/careers', [CareerController::class, 'index']);    
     Route::post('/careers', [CareerController::class, 'store']);
 });
