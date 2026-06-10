@@ -17,8 +17,8 @@ return new class extends Migration
 
             $table->string('name', 150);
 
-            $table->string('teacher', 150);
-            $table->string('classroom', 50);
+            $table->string('teacher', 150)->nullable();
+            $table->string('classroom', 50)->nullable();
 
         
             $table->string('color_code', 7);
