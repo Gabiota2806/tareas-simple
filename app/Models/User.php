@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -28,5 +29,23 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relación 1:N: un usuario puede tener varias universidades.
+     * Esta relación se usa para acceder a las universidades creadas por el usuario.
+     */
+    public function universities(): HasMany
+    {
+        return $this->hasMany(University::class);
+    }
+
+    /**
+     * Relación 1:N: un usuario puede tener varias carreras.
+     * Permite consultar las carreras asociadas al usuario directamente.
+     */
+    public function careers(): HasMany
+    {
+        return $this->hasMany(Career::class);
     }
 }
