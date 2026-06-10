@@ -15,16 +15,18 @@ class Subject extends Model
         'color_code',
         'is_active',
         'career_id',
-        'created_by',
+        'user_id',
     ];
 
-    public function creator(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+    return $this->belongsTo(User::class);
     }
 
     public function career(): BelongsTo
     {
         return $this->belongsTo(Career::class);
     }
+
+    
 }

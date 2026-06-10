@@ -29,8 +29,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->foreignId('created_by')
-                ->constrained('users')
+            $table->foreignId('user_id')
+                ->constrained()
                 ->cascadeOnDelete();
 
             $table->timestamps();
@@ -45,4 +45,3 @@ return new class extends Migration
         Schema::dropIfExists('subjects');
     }
 };
-
