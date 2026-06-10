@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UniversityController;
+use App\Http\Controllers\CareerController;
 use Illuminate\Support\Facades\Route;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,4 +24,14 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 Route::get('/subjects', function(){
     return view('subjects.index');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/universities', [UniversityController::class, 'index']);
+    Route::post('/universities', [UniversityController::class, 'store']);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/careers', [CareerController::class, 'index']);    
+    Route::post('/careers', [CareerController::class, 'store']);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\University;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Career extends Model
      */
     protected $fillable = [
         'name',
+        'duration_years',
         'university_id',
     ];
 
