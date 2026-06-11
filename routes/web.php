@@ -39,3 +39,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);
+
+   
