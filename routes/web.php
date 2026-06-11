@@ -25,13 +25,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+ 
+    // CRUD de Asignaturas (Subjects) con controladores y vistas Blade
     Route::resource('subjects', SubjectController::class);
-}); require __DIR__.'/auth.php';
-
+   
     // Vistas Web (Frontend Blade)
     Route::get('/subjects', function () {
         return view('subjects.index');
-    });
+    }); // Ruta para mostrar el formulario de creación de asignatura
 
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
@@ -39,5 +40,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);
+
+}); require __DIR__.'/auth.php';    // Rutas de autenticación de Breeze (login, register, etc.)
 
    
