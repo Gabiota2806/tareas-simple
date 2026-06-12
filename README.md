@@ -40,18 +40,23 @@ Toda rama de trabajo debe nacer de `backend-main` o `frontend-main` y nombrarse 
    git clone [url-del-repo]
    cd unitask
 
----
+## 🚀 Estado del Proyecto y Contexto Actual (Prototipo MVP)
 
-## 🚀 Sprint 1
-El estado de la infraestructura técnica es el siguiente:
+**Fecha Objetivo del Prototipo:** 26 de Junio de 2026.
 
-- [x] **Inicialización del Repositorio:** Repositorio central creado y colaboradores invitados.
-- [x] **Seguridad y Calidad:** Reglas de protección de rama `main` activas (Pull Requests obligatorios).
-- [x] **Scaffolding de Backend:** Instalación base de Laravel realizada con éxito en la rama `develop`.
-- [x] **Arquitectura de Ramas:** Estructura de `develop`, `backend-main` y `frontend-main` configurada con Rulesets delegados.
-- [x] **Definir el Layout Base (Mobile First):** paleta de colores corporativa y tipografía oficial.
-- [x] **Diseño de "Task Cards":** con indicadores visuales de prioridad (colores laterales).
-- [x] **Mockup interactivo del formulario:** "Agregar Tarea" y selector de prioridades.
-- [x] **Diseñar el Diagrama de Entidad-Relación (DER):** con tipos de datos (BigInt, String) y claves foráneas.
-- [x] **Definir el Diccionario:** de Datos con nomenclatura estándar en inglés (snake_case).
-- [x] **Redactar el Contrato de API (CONTRATO_API.md):** con las estructuras JSON de entrada y salida.
+Actualmente, el proyecto se encuentra en una fase de desarrollo acelerado para presentar un MVP funcional a la cátedra. Debido a esto, se han establecido las siguientes directivas arquitectónicas:
+1. **Desarrollo en Paralelo (Mocking):** El Frontend avanza maquetando vistas utilizando datos simulados (`fetch` locales) basados estrictamente en el `CONTRATO_API.md`, sin esperar a que el Backend finalice los endpoints.
+2. **Simplificación de Funciones:** 
+   - No se implementará paginación en el Backend (se devolverán arrays planos).
+   - El sistema de "Subtareas Jerárquicas" (Épica 4.2) ha sido pospuesto para después de la presentación del prototipo.
+3. **Módulo de Recuperación de Clave:** Activo y testeado usando Mailtrap como entorno seguro.
+
+### 🏆 Sprints Completados
+- **Sprint 1:** Infraestructura base, diagramas de BD y reglas de GitHub. (100% Finalizado)
+- **Sprint 2:** Configuración de migraciones, Modelos base y Controladores de perfil de usuario. (100% Finalizado)
+- **Sprint 3:** Autenticación, protección de rutas (Middleware), CRUD completo de asignaturas y vistas de registro/login adaptables. (100% Finalizado)
+
+### 🚧 Sprints Actuales y Futuros
+- **Sprint 4 (Actual):** Autenticación final, y carga inicial del módulo de Tareas (Frontend maquetando listados y Backend programando lógica y migraciones ampliadas).
+- **Sprint 5:** Integración final Front/Back, pulido de UX/UI (Tailwind Mobile-First, SweetAlert2) y generación de datos de prueba (Seeders) para la demostración.
+- **Sprint 6 y 7:** Post-prototipo (FullCalendar, Subtareas Jerárquicas y AJAX).
