@@ -104,7 +104,7 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
 | Método | Endpoint | Descripción | Body JSON |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/tasks` | Listar todas las tareas (de materias activas) | Ninguno |
-| `POST` | `/tasks` | Crear nueva tarea | `title`, `description`, `task_type`, `priority`, `subject_id`, `due_date` |
+| `POST` | `/tasks` | Crear nueva tarea | `title`, `description`, `task_type`, `priority`, `subject_id`, `due_date`, `task_time`, `estimated_time`, `reminder` |
 | `PATCH` | `/tasks/{id}` | Marcar como completada / Editar | `is_completed` u otros campos |
 | `DELETE` | `/tasks/{id}` | Eliminar tarea | Ninguno |
 
@@ -117,6 +117,9 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
   "priority": "high", 
   "subject_id": 1,
   "due_date": "2026-06-26",
+  "task_time": "18:30",
+  "estimated_time": "2h 30m",
+  "reminder": "1 día antes",
   "parent_id": null
 }
 ```
@@ -133,6 +136,9 @@ Este módulo es manejado internamente por Laravel Breeze, pero el Frontend debe 
     "priority": "high",
     "is_completed": false,
     "due_date": "2026-06-26",
+    "task_time": "18:30",
+    "estimated_time": "2h 30m",
+    "reminder": "1 día antes",
     "subject_id": 1,
     "parent_id": null,
     "subject": {
