@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update']);
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
 
+    Route::get('/tasks/create', function () {
+        return view('tasks.create');
+    })->name('tasks.create');
+    
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
     Route::post('/universities', [UniversityController::class, 'store']);
