@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CareerController;
+use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
@@ -25,10 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Vistas Web (Frontend Blade)
-    Route::get('/subjects', function () {
-        return view('subjects.index');
-    });
+    // CRUD de Asignaturas (Subjects)
+    Route::get('/subjects', [SubjectController::class, 'index']);
+    Route::post('/subjects', [SubjectController::class, 'store']);
+    Route::patch('/subjects/{subject}', [SubjectController::class, 'update']);
+    Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
 
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
@@ -36,4 +38,5 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);
+
 });
