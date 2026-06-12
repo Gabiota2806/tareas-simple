@@ -83,6 +83,9 @@ Actividades académicas estructuradas.
 | `priority` | ENUM | NOT NULL | Valores: 'high', 'medium', 'low'. |
 | `is_completed` | BOOLEAN | DEFAULT 0 | Estado de completitud (checkbox). |
 | `due_date` | DATE | NULL | Fecha de vencimiento. |
+| `task_time` | TIME | NULL | Hora opcional de la tarea. |
+| `estimated_time` | VARCHAR(50) | NULL | Tiempo estimado (Ej: "2h 30m"). |
+| `reminder` | VARCHAR(50) | NULL | Configuración de recordatorio. |
 | `is_deleted` | BOOLEAN | DEFAULT 0 | Borrado lógico (Soft Delete). |
 | `created_at` | TIMESTAMP | NULL | Fecha de creación. |
 | `updated_at` | TIMESTAMP | NULL | Última modificación. |
