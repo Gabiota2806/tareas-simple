@@ -30,6 +30,10 @@ Route::middleware('auth')->group(function () {
         return view('subjects.index');
     });
 
+    Route::get('/tasks/create', function () {
+        return view('tasks.create');
+    })->name('tasks.create');
+    
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
     Route::post('/universities', [UniversityController::class, 'store']);
