@@ -3,8 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CareerController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubjectController;
+use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
 Route::get('/', function () {
@@ -25,14 +25,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
- 
-    // CRUD de Asignaturas (Subjects) con controladores y vistas Blade
-    Route::resource('subjects', SubjectController::class);
-   
-    // Vistas Web (Frontend Blade)
-    Route::get('/subjects', function () {
-        return view('subjects.index');
-    }); // Ruta para mostrar el formulario de creación de asignatura
+
+    // CRUD de Asignaturas (Subjects)
+    Route::get('/subjects', [SubjectController::class, 'index']);
+    Route::post('/subjects', [SubjectController::class, 'store']);
+    Route::patch('/subjects/{subject}', [SubjectController::class, 'update']);
+    Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
 
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
@@ -41,6 +39,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);
 
-}); require __DIR__.'/auth.php';    // Rutas de autenticación de Breeze (login, register, etc.)
-
-   
+});
