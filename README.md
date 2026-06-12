@@ -5,23 +5,42 @@ Bienvenido a la versión profesional de **UniTask**, desarrollada por el equipo 
 ---
 
 ## 🌳 Estándares de Git y Flujo de Trabajo
-Para garantizar la integridad del código, el equipo debe seguir estrictamente estas reglas de nomenclatura:
+Para garantizar la integridad y el seguimiento del código, todo el equipo debe seguir estrictamente estas reglas de nomenclatura vinculadas a Jira:
 
-### Prefijos de Ramas
-Toda rama de trabajo debe nacer de `backend-main` o `frontend-main` y nombrarse con el formato: `tipo/nro-tarea-descripcion`.
+### 🌿 Convención de Nombres de Ramas
+Toda rama de trabajo debe nacer de `backend-main` o `frontend-main` y nombrarse con el formato: `tipo/UNITASK-[XX]-[breve-descripcion]`.
 
-| Prefijo | Propósito | Ejemplo |
+| Prefijo de Rama | Propósito | Ejemplo de Rama |
 | :--- | :--- | :--- |
-| `feat/` | Nuevas funcionalidades | `feat/UT-T-3.1-registro-tareas` |
-| `fix/` | Corrección de errores | `fix/UT-T-4.2-error-prioridad` |
-| `docs/` | Cambios en documentación | `docs/UT-T-1.2-update-readme` |
-| `refactor/` | Mejora de código sin cambios funcionales | `refactor/UT-T-5.1-limpieza-css` |
-| `test/` | Pruebas unitarias o QA | `test/UT-T-7.1-qa-logic` |
+| `feat/` | Nuevas funcionalidades o maquetados | `feat/UNITASK-75-formulario-tareas` |
+| `fix/` | Corrección de errores (Bugs) | `fix/UNITASK-73-error-auth` |
+| `style/` | Cambios de CSS o UI sin afectar lógica | `style/UNITASK-105-componentes-botones` |
+| `docs/` | Cambios en documentación | `docs/UNITASK-12-update-readme` |
+| `refactor/` | Mejora de código sin cambios funcionales | `refactor/UNITASK-40-limpieza-controlador` |
 
-### Reglas de Oro
-1. **No Commits Directos:** Está prohibido hacer commits directos a `main`, `develop`, `backend-main` o `frontend-main`.
-2. **Pull Requests (PR):** Todo cambio debe ser revisado y aprobado por el líder del sub-equipo antes de ser integrado.
-3. **Sincronización:** Antes de empezar a trabajar, asegúrate de estar en tu rama base y ejecutar `git pull`.
+### 💬 Convención de Mensajes de Commit
+Es **obligatorio** incluir el código del ticket de Jira en el mensaje del commit usando corchetes. Esto permite que Jira trakee automáticamente el avance del código.
+**Formato:** `tipo[UNITASK-XX]: Descripción clara y en imperativo`
+
+**Tipos de Prefijos Aceptados:**
+| Prefijo | Propósito | Ejemplo de Commit |
+| :--- | :--- | :--- |
+| `feat` | Nueva funcionalidad (Backend o Frontend) | `feat[UNITASK-75]: Implementar formulario de registro` |
+| `fix` | Corrección de un error (Bug) | `fix[UNITASK-73]: Corregir validación nullable` |
+| `docs` | Solo cambios en la documentación | `docs[UNITASK-12]: Actualizar estado de los Sprints` |
+| `style` | Cambios visuales de UI, CSS, formato, espacios | `style[UNITASK-105]: Crear componentes reutilizables` |
+| `refactor` | Cambio de código que no añade features ni arregla bugs | `refactor[UNITASK-40]: Extraer lógica a un trait` |
+| `test` | Agregar o corregir pruebas (PHPUnit, Cypress) | `test[UNITASK-80]: Añadir pruebas de integración para login` |
+| `perf` | Cambios para mejorar el rendimiento | `perf[UNITASK-50]: Agregar índices a la tabla users` |
+| `chore` | Tareas de mantenimiento, actualización de dependencias | `chore[UNITASK-02]: Actualizar versión de Laravel a 13.5` |
+| `build` | Cambios que afectan el sistema de construcción (Vite, NPM) | `build[UNITASK-04]: Configurar compilación de Tailwind` |
+| `ci` | Cambios en archivos o scripts de CI/CD (GitHub Actions) | `ci[UNITASK-05]: Configurar workflow de pruebas automáticas` |
+| `revert` | Revertir un commit anterior | `revert[UNITASK-99]: Revertir actualización de SweetAlert2` |
+
+### 🛡️ Reglas de Oro
+1. **No Commits Directos:** Está terminantemente prohibido hacer commits directos a `main`, `develop`, `backend-main` o `frontend-main`.
+2. **Pull Requests (PR):** Todo cambio debe enviarse vía PR y ser revisado y aprobado por el líder del sub-equipo (Antonio) antes de ser integrado.
+3. **Sincronización:** Antes de empezar a trabajar en una nueva tarea, asegúrate de hacer `git checkout` a la rama correcta y ejecutar `git pull`.
 
 ---
 
