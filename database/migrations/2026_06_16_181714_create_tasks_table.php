@@ -38,7 +38,7 @@ return new class extends Migration
                 ->constrained('tasks')
                 ->cascadeOnDelete();
 
-              $table->boolean('is_deleted')->default(false);   
+            $table->boolean('is_deleted')->default(false);   
      
             $table->timestamps();
         });
