@@ -59,23 +59,20 @@ Es **obligatorio** incluir el código del ticket de Jira en el mensaje del commi
    git clone [url-del-repo]
    cd unitask
 
-## 🚀 Estado del Proyecto y Contexto Actual (Prototipo MVP)
+## 🚀 Estado del Proyecto y Contexto Actual (Entrega Final)
 
-**Fecha Objetivo del Prototipo:** 26 de Junio de 2026.
+**Fecha Límite Definitiva:** 26 de Junio de 2026.
 
-Actualmente, el proyecto se encuentra en una fase de desarrollo acelerado para presentar un MVP funcional a la cátedra. Debido a esto, se han establecido las siguientes directivas arquitectónicas:
-1. **Desarrollo en Paralelo (Mocking):** El Frontend avanza maquetando vistas utilizando datos simulados (`fetch` locales) basados estrictamente en el `CONTRATO_API.md`, sin esperar a que el Backend finalice los endpoints.
-2. **Simplificación de Funciones:** 
-   - No se implementará paginación en el Backend (se devolverán arrays planos).
-   - El sistema de "Subtareas Jerárquicas" (Épica 4.2) ha sido pospuesto para después de la presentación del prototipo.
+El proyecto se encuentra en la recta final de desarrollo para presentar el sistema completo a la cátedra. Las directivas actuales son:
+1. **Conexión Directa Front/Back:** A partir del Sprint 5, se elimina el uso de datos simulados (mocking). El Frontend debe consumir los endpoints reales expuestos por el Backend para todas las funcionalidades.
+2. **Nuevas Funcionalidades:** Se incorpora un Tablero Kanban (Drag & Drop) para la gestión visual de tareas, además de mantener FullCalendar y las Subtareas Jerárquicas.
 3. **Módulo de Recuperación de Clave:** Activo y testeado usando Mailtrap como entorno seguro.
 
 ### 🏆 Sprints Completados
 - **Sprint 1:** Infraestructura base, diagramas de BD y reglas de GitHub. (100% Finalizado)
 - **Sprint 2:** Configuración de migraciones, Modelos base y Controladores de perfil de usuario. (100% Finalizado)
-- **Sprint 3:** Autenticación, protección de rutas (Middleware), CRUD completo de asignaturas y vistas de registro/login adaptables. (100% Finalizado)
+- **Sprint 3:** Autenticación, protección de rutas, CRUD de asignaturas y vistas adaptables. (100% Finalizado)
 
-### 🚧 Sprints Actuales y Futuros
-- **Sprint 4 (Actual):** Autenticación final, y carga inicial del módulo de Tareas (Frontend maquetando listados y Backend programando lógica y migraciones ampliadas).
-- **Sprint 5:** Integración final Front/Back, pulido de UX/UI (Tailwind Mobile-First, SweetAlert2) y generación de datos de prueba (Seeders) para la demostración.
-- **Sprint 6 y 7:** Post-prototipo (FullCalendar, Subtareas Jerárquicas y AJAX).
+### 🚧 Sprints Actuales
+- **Sprint 4 (Actual):** Autenticación final, Landing Page, e infraestructura Backend avanzada (Migraciones de tareas, recursividad para subtareas y endpoints AJAX).
+- **Sprint 5 (Final):** Integración completa Front/Back, Tablero Kanban, FullCalendar, ciclo de pruebas UAT, Seeders de demostración y Manual de Usuario final.
