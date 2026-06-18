@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
@@ -35,6 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/create', function () {
         return view('tasks.create');
     })->name('tasks.create');
+    
+    // API Dinámica - Kanban
+    Route::patch('/tasks/{task}', [TaskController::class, 'update']);
+    
+    // API Dinámica - Calendario
+    Route::get('/calendar/events', [CalendarController::class, 'events']);
     
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
