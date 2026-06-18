@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title', 200); // Título de la tarea
             
             $table->text('description')->nullable(); // Descripción detallada de la tarea (opcional)
-            $table->enum('tasks_type', ['parcial', 'final', 'tp', 'normal']); // Tipo de tarea
+            $table->enum('task_type', ['parcial', 'final', 'tp', 'normal']); // Tipo de tarea
             $table->enum('priority', ['low', 'medium', 'high']); // Prioridad de la tarea
             $table->boolean('is_completed')->default(false); // Estado de la tarea (completada o no)
             $table->date('due_date')->nullable();
@@ -38,6 +38,8 @@ return new class extends Migration
                 ->constrained('tasks')
                 ->cascadeOnDelete();
 
+              $table->boolean('is_deleted')->default(false);   
+     
             $table->timestamps();
         });
     }
