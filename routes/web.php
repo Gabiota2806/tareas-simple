@@ -56,7 +56,8 @@ Route::middleware('auth')->group(function () {
 
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
-    Route::post('/universities', [UniversityController::class, 'store']);
+    Route::get('/universities/create', [UniversityController::class, 'create'])->name('universities.create');
+    Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
 
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);

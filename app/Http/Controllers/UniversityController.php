@@ -19,6 +19,11 @@ class UniversityController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return view('universities.create');
+    }
+
 
     public function store(Request $request)
     {
@@ -33,10 +38,7 @@ class UniversityController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return response()->json([
-            'message' => 'Universidad creada correctamente.',
-            'data' => $university,
-        ], 201);
+        return back()->with('success', 'Universidad creada correctamente.');
     }
 
 }
