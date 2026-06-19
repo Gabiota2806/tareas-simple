@@ -45,51 +45,18 @@
 
             <!-- ================= MODO 1: MOCKUP DE LA IMAGEN (Filtrado estático por Alpine) ================= -->
             <div x-show="vista === 'mockup'" x-transition class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                
-                <!-- TARJETA 1: Algoritmos (Pendiente) -->
-                <div x-show="pestaña === 'todas' || pestaña === 'pendiente'" class="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col justify-between" data-id="1">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-[10px] font-extrabold text-violeta-moderno tracking-wider uppercase bg-purple-50 px-2.5 py-0.5 rounded-lg">Algoritmos</span>
-                            <button class="text-gray-300 hover:text-gray-500 text-base font-bold tracking-widest leading-none">···</button>
-                        </div>
-                        <h3 class="text-sm font-bold text-gray-800 mb-1.5">Estudiar para el parcial de Algoritmos</h3>
-                        <p class="text-xs text-gray-400 leading-relaxed mb-5">Repasar estructuras de datos, algoritmos de ordenamiento y complejidad.</p>
+                @foreach($tasks as $task)
+                    <div x-show="pestaña === 'todas' || (pestaña === 'pendiente' && !{{ $task->is_completed ? 'true' : 'false' }}) || (pestaña === 'completada' && {{ $task->is_completed ? 'true' : 'false' }})">
+                        <x-task-card 
+                            title="{{ $task->title }}"
+                            subject="{{ $task->subject->name ?? 'Sin materia' }}"
+                            type="{{ $task->task_type }}"
+                            priority="{{ $task->priority }}"
+                            description="{{ $task->description }}"
+                            dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
+                        />
                     </div>
-                    <div>
-                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-2">
-                            <span class="flex items-center gap-1 font-medium">📅 24 may</span>
-                            <span class="text-naranja-energico font-bold">⚡ Alta</span>
-                            <span class="font-bold text-gray-700">60%</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-violeta-moderno h-full rounded-full" style="width: 60%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TARJETA 2: Bases de Datos (En Progreso) -->
-                <div x-show="pestaña === 'todas' || pestaña === 'proceso'" class="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col justify-between" data-id="2">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-[10px] font-extrabold text-verde-fresco tracking-wider uppercase bg-emerald-50 px-2.5 py-0.5 rounded-lg">Bases de datos</span>
-                            <button class="text-gray-300 hover:text-gray-500 text-base font-bold tracking-widest leading-none">···</button>
-                        </div>
-                        <h3 class="text-sm font-bold text-gray-800 mb-1.5">Entrega del proyecto final</h3>
-                        <p class="text-xs text-gray-400 leading-relaxed mb-5">Desarrollar e implementar la base de datos del sistema.</p>
-                    </div>
-                    <div>
-                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-2">
-                            <span class="flex items-center gap-1 font-medium">📅 28 may</span>
-                            <span class="text-naranja-energico font-bold">⚡ Media</span>
-                            <span class="font-bold text-gray-700">30%</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-verde-fresco h-full rounded-full" style="width: 30%"></div>
-                        </div>
-                    </div>
-                </div>
-
+                @endforeach
             </div>
 
             <!-- ================= MODO 2: MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
@@ -101,26 +68,30 @@
                         <span>📋 Pendientes</span>
                     </h3>
                     <div id="col-pendiente" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="pendiente">
-                        <!-- Las tarjetas arrastrables se moverán aquí usando los ID asignados -->
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 cursor-grab active:cursor-grabbing shadow-sm hover:shadow" data-id="1">
-                            <span class="text-[9px] font-bold text-violeta-moderno bg-purple-50 px-2 py-0.5 rounded">Algoritmos</span>
-                            <h4 class="text-xs font-bold text-gray-800 mt-2">Estudiar para el parcial de Algoritmos</h4>
-                        </div>
+                        @foreach($tasks->where('is_completed', false) as $task)
+                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
+                                <x-task-card 
+                                    title="{{ $task->title }}"
+                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
+                                    type="{{ $task->task_type }}"
+                                    priority="{{ $task->priority }}"
+                                    description="{{ $task->description }}"
+                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
+                                />
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
-                                <!-- COLUMNA: EN PROCESO -->
+                <!-- COLUMNA: EN PROCESO (Temporalmente vacía al cargar) -->
                 <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
                     <h3 class="font-bold text-blue-700 text-sm mb-4 flex items-center justify-between">
                         <span>⚡ En progreso</span>
                     </h3>
                     <div id="col-proceso" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="proceso">
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 cursor-grab active:cursor-grabbing shadow-sm hover:shadow" data-id="2">
-                            <span class="text-[9px] font-bold text-verde-fresco bg-emerald-50 px-2 py-0.5 rounded">Bases de datos</span>
-                            <h4 class="text-xs font-bold text-gray-800 mt-2">Entrega del proyecto final</h4>
-                        </div>
+                        <!-- Destino temporal -->
                     </div>
-                </div> <!-- <-- ASEGÚRATE DE QUE ESTE DIV ESTÉ AQUÍ PARA CERRAR EN PROCESO -->
+                </div>
 
                 <!-- COLUMNA: COMPLETADAS -->
                 <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
@@ -128,10 +99,20 @@
                         <span>✅ Completadas</span>
                     </h3>
                     <div id="col-completada" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="completada">
-                        <!-- Destino de tarjetas -->
+                        @foreach($tasks->where('is_completed', true) as $task)
+                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
+                                <x-task-card 
+                                    title="{{ $task->title }}"
+                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
+                                    type="{{ $task->task_type }}"
+                                    priority="{{ $task->priority }}"
+                                    description="{{ $task->description }}"
+                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
+                                />
+                            </div>
+                        @endforeach
                     </div>
-                </div> <!-- <-- CIERRA LA COLUMNA COMPLETADAS -->
-
+                </div>
             </div> <!-- <-- CIERRA EL CONTENEDOR FLEX/GRID DE LAS COLUMNAS -->
         </main>
 
