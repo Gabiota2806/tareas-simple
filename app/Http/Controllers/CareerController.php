@@ -11,14 +11,21 @@ class CareerController extends Controller
 
     public function index(Request $request)
     {
-        $careers = Career::whereHas('university', function ($query) use ($request) {
+        $universities = University::where('user_id', $request->user()->id)->orderBy('name')->get();
+        $selectedUniversity = $request->query('university_id');
+
+        $careersQuery = Career::whereHas('university', function ($query) use ($request) {
                 $query->where('user_id', $request->user()->id);
             })
-            ->with('university')
-            ->orderBy('name')
-            ->get();
+            ->with('university');
 
-        return view('careers.index', compact('careers'));
+        if ($selectedUniversity) {
+            $careersQuery->where('university_id', $selectedUniversity);
+        }
+
+        $careers = $careersQuery->orderBy('name')->get();
+
+        return view('careers.index', compact('careers', 'universities', 'selectedUniversity'));
     }
 
     public function create(Request $request)

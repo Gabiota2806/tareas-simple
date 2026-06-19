@@ -16,13 +16,23 @@ class SubjectController extends Controller
     {
         // Obtenemos el parámetro de vigencia desde la consulta, por defecto mostramos solo las activas (is_active = 1)
         $isActive = $request->boolean('is_active', true);
+        $selectedCareer = $request->query('career_id');
 
-        // Consultamos las asignaturas del usuario autenticado filtrando por el estado de vigencia
-        $subjects = Subject::where('user_id', Auth::id())
-                           ->where('is_active', $isActive)
-                           ->get();
+        $careers = \App\Models\Career::whereHas('university', function($q) {
+            $q->where('user_id', Auth::id());
+        })->orderBy('name')->get();
 
-        return view('subjects.index', compact('subjects', 'isActive'));
+        // Consultamos las asignaturas del usuario autenticado filtrando por el estado de vigencia y carrera si está presente
+        $subjectsQuery = Subject::where('user_id', Auth::id())
+                           ->where('is_active', $isActive);
+
+        if ($selectedCareer) {
+            $subjectsQuery->where('career_id', $selectedCareer);
+        }
+
+        $subjects = $subjectsQuery->get();
+
+        return view('subjects.index', compact('subjects', 'isActive', 'careers', 'selectedCareer'));
     }
 
     /**

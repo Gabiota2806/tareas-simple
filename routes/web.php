@@ -27,7 +27,7 @@ Route::get('/dashboard', function () {
 require __DIR__ . '/auth.php';
 
 // 3. Rutas Protegidas del Sistema UniTask
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Perfil de Usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

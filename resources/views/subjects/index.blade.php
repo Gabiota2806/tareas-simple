@@ -3,9 +3,33 @@
     <div class="min-h-screen bg-gray-100 p-8">
         <div class="max-w-7xl mx-auto">
 
-            <h1 class="text-3xl font-bold text-gray-800 mb-8">
-                Mis Materias
-            </h1>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+                <h1 class="text-3xl font-bold text-gray-800 font-nunito flex-shrink-0">
+                    Mis Materias
+                </h1>
+                <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <form method="GET" action="{{ route('subjects.index') }}" class="w-full sm:w-64">
+                        <select name="career_id" onchange="this.form.submit()"
+                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition text-sm">
+                            <option value="">Todas las carreras</option>
+                            @foreach($careers as $career)
+                                <option value="{{ $career->id }}" {{ $selectedCareer == $career->id ? 'selected' : '' }}>
+                                    {{ $career->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                    <a href="{{ route('subjects.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md transition-all font-nunito flex-shrink-0">
+                        + Nueva Materia
+                    </a>
+                </div>
+            </div>
+
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm font-bold text-center font-nunito">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
