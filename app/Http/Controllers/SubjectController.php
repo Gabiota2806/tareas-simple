@@ -22,9 +22,16 @@ class SubjectController extends Controller
                            ->where('is_active', $isActive)
                            ->get();
 
-        return response()->json([
-            'data' => $subjects,
-        ]);
+        return view('subjects.index', compact('subjects', 'isActive'));
+    }
+
+    /**
+     * Muestra el formulario para crear una nueva asignatura.
+     */
+    public function create()
+    {
+        $careers = \App\Models\Career::all();
+        return view('subjects.create', compact('careers'));
     }
 
     /**
@@ -50,10 +57,7 @@ class SubjectController extends Controller
         // Creamos la asignatura mediante asignación masiva usando el modelo oficial
         $subject = Subject::create($validated);
 
-        return response()->json([
-            'message' => 'Asignatura registrada con éxito.',
-            'data' => $subject,
-        ], 201);
+        return redirect('/subjects')->with('success', 'Asignatura registrada con éxito.');
     }
 
     /**
