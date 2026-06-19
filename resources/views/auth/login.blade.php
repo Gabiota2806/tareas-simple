@@ -145,6 +145,11 @@
                 Iniciar sesión
             </button>
 
+            <div class="text-center mt-4">
+                <a href="{{ route('register') }}" class="text-sm text-violeta-moderno hover:underline transition">
+                    ¿No tenés cuenta? Crear cuenta
+                </a>
+            </div>
         </div>
     </form>
 </x-guest-layout>
