@@ -42,13 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
-    Route::get('/tasks/create', function () {
-        return view('tasks.create');
-    })->name('tasks.create');
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
 
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);
-    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 
