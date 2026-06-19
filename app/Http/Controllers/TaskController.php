@@ -23,6 +23,15 @@ class TaskController extends Controller
         return response()->json($tasks);
     }
 
+    public function create()
+    {
+        $subjects = Subject::where('user_id', Auth::id())
+            ->where('is_active', true)
+            ->get();
+            
+        return view('tasks.create', compact('subjects'));
+    }
+
     /**
      * Crea una nueva tarea (CRUD base + actualización incremental)
      */
@@ -58,10 +67,14 @@ class TaskController extends Controller
 
         $task = Task::create($validated);
 
-        return response()->json([
-            'message' => 'Tarea creada exitosamente',
-            'data' => $task
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Tarea creada exitosamente',
+                'data' => $task
+            ], 201);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Tarea creada exitosamente.');
     }
 
     /**
