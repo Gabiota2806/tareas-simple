@@ -62,34 +62,48 @@
 
             <!-- Top bar -->
             <header class="sticky top-0 z-30 border-b border-gray-100 bg-white/90 backdrop-blur-md">
-                <div class="flex h-16 items-center justify-between px-6">
+                <div class="flex h-20 items-center justify-between gap-4 px-6">
+
+                    <!-- Título dinámico de sección -->
                     <div>
-                        @isset($header)
-                            {{ $header }}
-                        @else
-                            <h1 class="text-lg font-semibold text-gray-800">
-                                @if (request()->routeIs('dashboard'))
-                                    Inicio
-                                @elseif(request()->is('subjects*'))
-                                    Materias
-                                @elseif(request()->is('universities*'))
-                                    Universidad
-                                @elseif(request()->is('calendar*'))
-                                    Calendario
-                                @elseif(request()->routeIs('tasks.create'))
-                                    Nueva tarea
-                                @else
-                                    UniTask
-                                @endif
-                            </h1>
-                        @endisset
+                        <h1 class="text-xl font-bold text-gray-800">
+                            @if (request()->routeIs('dashboard'))
+                                Inicio
+                            @elseif(request()->is('universities*'))
+                                Universidad
+                            @elseif(request()->is('subjects*'))
+                                Materias
+                            @elseif(request()->is('calendar*'))
+                                Calendario
+                            @elseif(request()->routeIs('tasks.create'))
+                                Nueva tarea
+                            @else
+                                Panel
+                            @endif
+                        </h1>
                     </div>
 
+                    <!-- Buscador -->
+                    <div class="hidden md:block flex-1 max-w-xl">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+
+                            <input type="text" placeholder="Buscar tareas, materias o fechas..."
+                                class="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:bg-white focus:ring-1 focus:ring-violeta-moderno">
+                        </div>
+                    </div>
+
+                    <!-- Usuario -->
                     <div class="relative">
                         <button @click="userMenuOpen = !userMenuOpen"
-                            class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50">
+                            class="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50">
                             <span
-                                class="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 font-bold text-violeta-moderno">
+                                class="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 font-bold text-violeta-moderno">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </span>
 
@@ -105,7 +119,7 @@
                         </button>
 
                         <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition
-                            class="absolute right-0 mt-3 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
+                            class="absolute right-0 z-50 mt-3 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
                             style="display: none;">
                             <div class="border-b border-gray-100 px-4 py-3">
                                 <p class="font-semibold text-gray-800">{{ Auth::user()->name }}</p>
@@ -127,6 +141,12 @@
                             </form>
                         </div>
                     </div>
+                </div>
+
+                <!-- Buscador móvil -->
+                <div class="border-t border-gray-100 px-6 py-3 md:hidden">
+                    <input type="text" placeholder="Buscar..."
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
                 </div>
             </header>
 

@@ -26,7 +26,7 @@
                 @auth
                     <a href="{{ url('/dashboard') }}"
                         class="rounded-xl bg-violeta-moderno px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">
-                        Ir al dashboard
+                        Ir al Inicio
                     </a>
                 @else
                     <a href="{{ route('login') }}"

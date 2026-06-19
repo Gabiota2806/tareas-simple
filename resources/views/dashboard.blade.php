@@ -4,30 +4,11 @@
         
         <!-- ================= CONTENIDO PRINCIPAL DE LA APLICACIÓN ================= -->
         <!-- Inicializamos Alpine.js con dos estados: la pestaña activa ('todas') y el modo de vista ('mockup') -->
-        <main x-data="{ pestaña: 'todas', vista: 'mockup' }" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
             
             <!-- Barra Superior: Buscador y Botón de Tarea -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                <!-- Buscador con icono de lupa -->
-                <div class="relative w-full md:max-w-md">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </span>
-                    <input type="text" placeholder="Buscar tareas, proyectos, etiquetas..." 
-                           class="w-full pl-11 pr-4 py-2.5 bg-white rounded-xl border border-gray-200/80 text-xs focus:outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno placeholder-gray-400 transition-all">
-                </div>
                 
-                <!-- Selector de Modo de Vista (Alternar entre Diseño Mockup y Columnas Drag & Drop) -->
-                <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold self-end md:self-auto shadow-inner">
-                    <button @click="vista = 'mockup'" :class="vista === 'mockup' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'" class="px-3 py-1.5 rounded-lg transition-all">
-                        👁️ Vista Mockup
-                    </button>
-                    <button @click="vista = 'drag'" :class="vista === 'drag' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'" class="px-3 py-1.5 rounded-lg transition-all">
-                        🖐️ Modo Drag & Drop
-                    </button>
-                </div>
 
                 <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
@@ -43,24 +24,8 @@
                 <button @click="pestaña = 'completada'" :class="pestaña === 'completada' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Completadas</button>
             </div>
 
-            <!-- ================= MODO 1: MOCKUP DE LA IMAGEN (Filtrado estático por Alpine) ================= -->
-            <div x-show="vista === 'mockup'" x-transition class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                @foreach($tasks as $task)
-                    <div x-show="pestaña === 'todas' || (pestaña === 'pendiente' && !{{ $task->is_completed ? 'true' : 'false' }}) || (pestaña === 'completada' && {{ $task->is_completed ? 'true' : 'false' }})">
-                        <x-task-card 
-                            title="{{ $task->title }}"
-                            subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                            type="{{ $task->task_type }}"
-                            priority="{{ $task->priority }}"
-                            description="{{ $task->description }}"
-                            dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                        />
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- ================= MODO 2: MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
-            <div x-show="vista === 'drag'" x-transition class="flex flex-col lg:flex-row gap-5 items-start">
+            <!-- ================= MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
+            <div class="flex flex-col lg:flex-row gap-5 items-start">
                 
                 <!-- COLUMNA: PENDIENTES -->
                 <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
