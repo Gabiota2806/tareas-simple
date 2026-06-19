@@ -1,17 +1,250 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+    <!-- Contenedor general con tipografía Nunito y fondo gris claro del mockup -->
+    <div class="font-nunito bg-[#F8FAFC] min-h-screen flex text-[#1E293B]">
+        
+        <!-- ================= BARRA LATERAL IZQUIERDA (Escritorio) ================= -->
+        <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-gray-100 p-6 justify-between shrink-0 h-screen sticky top-0">
+            <!-- Parte superior de la barra lateral -->
+            <div class="space-y-8">
+                <!-- Logotipo / Nombre de la App -->
+                <div class="flex items-center gap-2 px-2">
+                    <div class="bg-violeta-moderno text-white p-1.5 rounded-lg shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    </div>
+                    <span class="font-black text-lg tracking-tight text-gray-900">StudyFlow</span>
+                </div>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
+                <!-- Menú de Navegación -->
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-purple-50 text-violeta-moderno rounded-xl text-sm font-bold transition-colors">
+                        <span>📋</span> Mis tareas
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
+                        <span>📅</span> Calendario
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
+                        <span>📁</span> Proyectos
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
+                        <span>🏷️</span> Etiquetas
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
+                        <span>📊</span> Estadísticas
+                    </a>
+                </nav>
+
+                <!-- Tarjeta publicitaria/Inspiracional interna -->
+                <div class="bg-purple-50 rounded-2xl p-4 text-center space-y-2 border border-purple-100/50">
+                    <span class="text-2xl">📚</span>
+                    <h4 class="text-xs font-bold text-gray-950">Mantén el foco</h4>
+                    <p class="text-[11px] text-gray-500 leading-relaxed">¡Tú puedes lograr grandes cosas!</p>
                 </div>
             </div>
+
+            <!-- SECCIÓN INFERIOR IZQUIERDA: Perfil y Rol de Usuario -->
+            <div class="flex items-center gap-3 border-t border-gray-100 pt-4 px-2">
+                <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center font-bold text-violeta-moderno text-sm shadow-inner overflow-hidden">
+                    <span class="uppercase">{{ substr(Auth::user()->name, 0, 2) }}</span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                    <span class="text-xs font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
+                    <span class="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded w-max mt-0.5">Estudiante Universidad</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================= CONTENIDO PRINCIPAL DE LA APLICACIÓN ================= -->
+        <main x-data="{ pestaña: 'todas', vista: 'mockup' }" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
+            
+        <!-- Inicializamos Alpine.js con dos estados: la pestaña activa ('todas') y el modo de vista ('mockup') -->
+        <main x-data="{ pestaña: 'todas', vista: 'mockup' }" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
+            
+            <!-- Barra Superior: Buscador y Botón de Tarea -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                <!-- Buscador con icono de lupa -->
+                <div class="relative w-full md:max-w-md">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 text-sm">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </span>
+                    <input type="text" placeholder="Buscar tareas, proyectos, etiquetas..." 
+                           class="w-full pl-11 pr-4 py-2.5 bg-white rounded-xl border border-gray-200/80 text-xs focus:outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno placeholder-gray-400 transition-all">
+                </div>
+                
+                <!-- Selector de Modo de Vista (Alternar entre Diseño Mockup y Columnas Drag & Drop) -->
+                <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold self-end md:self-auto shadow-inner">
+                    <button @click="vista = 'mockup'" :class="vista === 'mockup' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'" class="px-3 py-1.5 rounded-lg transition-all">
+                        👁️ Vista Mockup
+                    </button>
+                    <button @click="vista = 'drag'" :class="vista === 'drag' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'" class="px-3 py-1.5 rounded-lg transition-all">
+                        🖐️ Modo Drag & Drop
+                    </button>
+                </div>
+
+                <button class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    Nueva tarea
+                </button>
+            </div>
+
+            <!-- Filtros de Pestañas (Solo visibles y funcionales en la Vista Mockup plana) -->
+            <div x-show="vista === 'mockup'" x-transition class="flex items-center gap-2 overflow-x-auto pb-3 mb-8 border-b border-gray-100/50 scrollbar-none">
+                <button @click="pestaña = 'todas'" :class="pestaña === 'todas' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all">Todas</button>
+                <button @click="pestaña = 'pendiente'" :class="pestaña === 'pendiente' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Pendientes</button>
+                <button @click="pestaña = 'proceso'" :class="pestaña === 'proceso' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">En progreso</button>
+                <button @click="pestaña = 'completada'" :class="pestaña === 'completada' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Completadas</button>
+            </div>
+
+            <!-- ================= MODO 1: MOCKUP DE LA IMAGEN (Filtrado estático por Alpine) ================= -->
+            <div x-show="vista === 'mockup'" x-transition class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- TARJETA 1: Algoritmos (Pendiente) -->
+                <div x-show="pestaña === 'todas' || pestaña === 'pendiente'" class="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col justify-between" data-id="1">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-extrabold text-violeta-moderno tracking-wider uppercase bg-purple-50 px-2.5 py-0.5 rounded-lg">Algoritmos</span>
+                            <button class="text-gray-300 hover:text-gray-500 text-base font-bold tracking-widest leading-none">···</button>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-1.5">Estudiar para el parcial de Algoritmos</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-5">Repasar estructuras de datos, algoritmos de ordenamiento y complejidad.</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-2">
+                            <span class="flex items-center gap-1 font-medium">📅 24 may</span>
+                            <span class="text-naranja-energico font-bold">⚡ Alta</span>
+                            <span class="font-bold text-gray-700">60%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-violeta-moderno h-full rounded-full" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TARJETA 2: Bases de Datos (En Progreso) -->
+                <div x-show="pestaña === 'todas' || pestaña === 'proceso'" class="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col justify-between" data-id="2">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-extrabold text-verde-fresco tracking-wider uppercase bg-emerald-50 px-2.5 py-0.5 rounded-lg">Bases de datos</span>
+                            <button class="text-gray-300 hover:text-gray-500 text-base font-bold tracking-widest leading-none">···</button>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-1.5">Entrega del proyecto final</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-5">Desarrollar e implementar la base de datos del sistema.</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-2">
+                            <span class="flex items-center gap-1 font-medium">📅 28 may</span>
+                            <span class="text-naranja-energico font-bold">⚡ Media</span>
+                            <span class="font-bold text-gray-700">30%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-verde-fresco h-full rounded-full" style="width: 30%"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= MODO 2: MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
+            <div x-show="vista === 'drag'" x-transition class="flex flex-col lg:flex-row gap-5 items-start">
+                
+                <!-- COLUMNA: PENDIENTES -->
+                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
+                    <h3 class="font-bold text-gray-700 text-sm mb-4 flex items-center justify-between">
+                        <span>📋 Pendientes</span>
+                    </h3>
+                    <div id="col-pendiente" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="pendiente">
+                        <!-- Las tarjetas arrastrables se moverán aquí usando los ID asignados -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 cursor-grab active:cursor-grabbing shadow-sm hover:shadow" data-id="1">
+                            <span class="text-[9px] font-bold text-violeta-moderno bg-purple-50 px-2 py-0.5 rounded">Algoritmos</span>
+                            <h4 class="text-xs font-bold text-gray-800 mt-2">Estudiar para el parcial de Algoritmos</h4>
+                        </div>
+                    </div>
+                </div>
+
+                                <!-- COLUMNA: EN PROCESO -->
+                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
+                    <h3 class="font-bold text-blue-700 text-sm mb-4 flex items-center justify-between">
+                        <span>⚡ En progreso</span>
+                    </h3>
+                    <div id="col-proceso" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="proceso">
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 cursor-grab active:cursor-grabbing shadow-sm hover:shadow" data-id="2">
+                            <span class="text-[9px] font-bold text-verde-fresco bg-emerald-50 px-2 py-0.5 rounded">Bases de datos</span>
+                            <h4 class="text-xs font-bold text-gray-800 mt-2">Entrega del proyecto final</h4>
+                        </div>
+                    </div>
+                </div> <!-- <-- ASEGÚRATE DE QUE ESTE DIV ESTÉ AQUÍ PARA CERRAR EN PROCESO -->
+
+                <!-- COLUMNA: COMPLETADAS -->
+                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
+                    <h3 class="font-bold text-green-700 text-sm mb-4 flex items-center justify-between">
+                        <span>✅ Completadas</span>
+                    </h3>
+                    <div id="col-completada" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="completada">
+                        <!-- Destino de tarjetas -->
+                    </div>
+                </div> <!-- <-- CIERRA LA COLUMNA COMPLETADAS -->
+
+            </div> <!-- <-- CIERRA EL CONTENEDOR FLEX/GRID DE LAS COLUMNAS -->
+        </main>
+
+
+        <!-- Botón Flotante (Exclusivo Vista Móvil) -->
+        <div class="fixed bottom-6 right-6 lg:hidden z-50">
+            <button class="bg-violeta-moderno text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg font-bold active:scale-95 transition-transform">
+                +
+            </button>
         </div>
+
     </div>
+
+        <!-- Script de Inicialización utilizando la instancia global -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Buscamos todas las columnas grises que tengan la clase de arrastre
+            const columnas = document.querySelectorAll('.contenedor-sortable');
+
+            columnas.forEach(columna => {
+                // Usamos window.Sortable que registramos en app.js
+                new window.Sortable(columna, {
+                    group: 'kanban-tareas', // LLAVE MAESTRA: Permite mover tarjetas ENTRE columnas
+                    animation: 150,         // Movimiento fluido en milisegundos
+                    ghostClass: 'bg-purple-50', // Fondo de la columna mientras arrastras
+                    chosenClass: 'opacity-50',   // Transparencia al seleccionar la tarjeta
+                    
+                    // Evento automático al soltar la tarjeta
+                    onEnd: async function (evt) {
+                        const tarjetaId = evt.item.getAttribute('data-id');
+                        const estadoDestino = evt.to.getAttribute('data-estado');
+
+                        console.log(`¡Éxito! Tarjeta ${tarjetaId} movida a: ${estadoDestino}`);
+
+                        // Aquí se enviará la petición PATCH en la siguiente actividad
+                                                // Conectamos directamente al endpoint PATCH oficial de UniTask
+                        try {
+                            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                            
+                            // La URL oficial usa /tasks/ seguido del ID de la tarea
+                            await fetch(`/tasks/${tarjetaId}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': token
+                                },
+                                // Enviamos el estado con la llave 'state' (o 'status' si su BD lo requiere)
+                                body: JSON.stringify({ 
+                                    state: estadoDestino 
+                                })
+                            });
+                            
+                            console.log(`¡Petición enviada! Tarea ${tarjetaId} actualizada a: ${estadoDestino}`);
+                        } catch (error) {
+                            console.error('Error de red al conectar con el backend:', error);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </x-app-layout>
+
