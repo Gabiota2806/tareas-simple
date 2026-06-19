@@ -58,9 +58,9 @@
                         <span class="text-5xl mb-4 block">📚</span>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">No tienes materias registradas</h3>
                         <p class="text-gray-500 mb-6">Aún no has agregado ninguna materia a tu plan de estudios.</p>
-                        <button class="bg-violeta-moderno hover:bg-opacity-90 text-white px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all">
+                        <a href="{{ route('subjects.create') }}" class="inline-block bg-violeta-moderno hover:bg-opacity-90 text-white px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all">
                             Agregar mi primera materia
-                        </button>
+                        </a>
                     </div>
                 @endforelse
             </div>

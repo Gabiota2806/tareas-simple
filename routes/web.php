@@ -36,7 +36,8 @@ Route::middleware('auth')->group(function () {
 
     // CRUD de Asignaturas (Subjects)
     Route::get('/subjects', [SubjectController::class, 'index']);
-    Route::post('/subjects', [SubjectController::class, 'store']);
+    Route::get('/subjects/create', [SubjectController::class, 'create'])->name('subjects.create');
+    Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update']);
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
 

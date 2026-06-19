@@ -13,19 +13,20 @@
                     </p>
                 </div>
 
-                <form class="space-y-4">
+                <form method="POST" action="{{ route('subjects.store') }}" class="space-y-4">
+                    @csrf
                     <!-- Nombre -->
                     <div>
                         <label for="nombre" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
                             Nombre de la asignatura
                         </label>
-                        <input type="text" id="nombre"
+                        <input type="text" id="nombre" name="name" required
                                class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito
                                focus:border-violet-400 focus:ring-violet-400 transition">
                     </div>
 
                     <!-- Carrera custom dropdown -->
-                    <div x-data="{ open: false, selected: 'Seleccione una carrera' }" class="relative">
+                    <div x-data="{ open: false, selected: 'Seleccione una carrera', selectedId: '' }" class="relative">
                         <label class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
                             Carrera
                         </label>
@@ -43,23 +44,17 @@
                         <div x-show="open" @click.away="open = false"
                              class="absolute mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-20">
                             <ul class="rounded-lg overflow-hidden">
-                                <li @click="selected = 'Ingeniería Informática'; open = false"
-                                    class="px-3 py-2 hover:bg-violet-100 cursor-pointer">
-                                    Ingeniería Informática
+                                @foreach($careers as $career)
+                                <li @click="selected = '{{ $career->name }}'; selectedId = '{{ $career->id }}'; open = false"
+                                    class="px-3 py-2 hover:bg-violet-100 cursor-pointer text-sm font-nunito">
+                                    {{ $career->name }}
                                 </li>
-                                <li @click="selected = 'Administración'; open = false"
-                                    class="px-3 py-2 hover:bg-violet-100 cursor-pointer">
-                                    Administración
-                                </li>
-                                <li @click="selected = 'Diseño Gráfico'; open = false"
-                                    class="px-3 py-2 hover:bg-violet-100 cursor-pointer">
-                                    Diseño Gráfico
-                                </li>
+                                @endforeach
                             </ul>
                         </div>
 
                         <!-- Input oculto para enviar el valor -->
-                        <input type="hidden" name="carrera_id" :value="selected">
+                        <input type="hidden" name="career_id" :value="selectedId" required>
                     </div>
 
                     <!-- Color identificador (sin hexadecimal visible) -->
@@ -69,7 +64,7 @@
                                 Color
                             </label>
                             <div class="relative w-6 h-6">
-                                <input type="color" id="color_identificador"
+                                <input type="color" id="color_identificador" name="color_code" value="#8B5CF6" required
                                        class="absolute top-0 left-0 w-6 h-6 opacity-0 cursor-pointer z-10"
                                        onchange="document.getElementById('color_preview').style.backgroundColor=this.value">
                                 <div id="color_preview"
