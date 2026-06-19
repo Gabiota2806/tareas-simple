@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>UniTask</title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('favicon.jpg') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -32,13 +33,20 @@
                     </a>
 
                     <a href="{{ url('/universities') }}"
-                        class="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->is('universities*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
                         Universidad
+                    </a>
+
+                    <a href="{{ url('/careers') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->is('careers*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        Carreras
                     </a>
 
                     <a href="{{ url('/subjects') }}"
                         class="block rounded-xl px-4 py-3 text-sm font-medium transition
-                        {{ request()->is('subjects') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        {{ request()->is('subjects*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
                         Materias
                     </a>
 
@@ -66,21 +74,27 @@
 
                     <!-- Título dinámico de sección -->
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800">
-                            @if (request()->routeIs('dashboard'))
-                                Inicio
-                            @elseif(request()->is('universities*'))
-                                Universidad
-                            @elseif(request()->is('subjects*'))
-                                Materias
-                            @elseif(request()->is('calendar*'))
-                                Calendario
-                            @elseif(request()->routeIs('tasks.create'))
-                                Nueva tarea
-                            @else
-                                Panel
-                            @endif
-                        </h1>
+                        @isset($header)
+                            {{ $header }}
+                        @else
+                            <h1 class="text-lg font-semibold text-gray-800">
+                                @if (request()->routeIs('dashboard'))
+                                    Inicio
+                                @elseif(request()->is('subjects*'))
+                                    Materias
+                                @elseif(request()->is('universities*'))
+                                    Universidad
+                                @elseif(request()->is('careers*'))
+                                    Carreras
+                                @elseif(request()->is('calendar*'))
+                                    Calendario
+                                @elseif(request()->routeIs('tasks.create'))
+                                    Nueva tarea
+                                @else
+                                    UniTask
+                                @endif
+                            </h1>
+                        @endisset
                     </div>
 
                     <!-- Buscador -->

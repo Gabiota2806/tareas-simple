@@ -18,7 +18,15 @@
                         Inicio
                     </x-nav-link>
 
-                    <x-nav-link :href="url('/subjects')" :active="request()->is('subjects')">
+                    <x-nav-link :href="route('universities.index')" :active="request()->routeIs('universities.*')">
+                        Universidades
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('careers.index')" :active="request()->routeIs('careers.*')">
+                        Carreras
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">
                         Materias
                     </x-nav-link>
 
@@ -91,7 +99,15 @@
                     Dashboard
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="url('/subjects')" :active="request()->is('subjects')">
+                <x-responsive-nav-link :href="route('universities.index')" :active="request()->routeIs('universities.*')">
+                    Universidades
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('careers.index')" :active="request()->routeIs('careers.*')">
+                    Carreras
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('subjects.index')" :active="request()->routeIs('subjects.*')">
                     Materias
                 </x-responsive-nav-link>
 
@@ -109,7 +125,7 @@
 
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
+                        {{ __('Perfil') }}
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->
@@ -119,7 +135,7 @@
                         <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                            {{ __('Log Out') }}
+                            {{ __('Cerrar sesión') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>
