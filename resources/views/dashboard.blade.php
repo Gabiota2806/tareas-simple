@@ -29,10 +29,10 @@
                     </button>
                 </div>
 
-                <button class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
+                <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
                     Nueva tarea
-                </button>
+                </a>
             </div>
 
             <!-- Filtros de Pestañas (Solo visibles y funcionales en la Vista Mockup plana) -->
@@ -119,9 +119,9 @@
 
         <!-- Botón Flotante (Exclusivo Vista Móvil) -->
         <div class="fixed bottom-6 right-6 lg:hidden z-50">
-            <button class="bg-violeta-moderno text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg font-bold active:scale-95 transition-transform">
+            <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg font-bold active:scale-95 transition-transform hover:bg-opacity-90">
                 +
-            </button>
+            </a>
         </div>
 
     </div>
