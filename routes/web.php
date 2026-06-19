@@ -35,11 +35,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // CRUD de Asignaturas (Subjects)
-    Route::get('/subjects', [SubjectController::class, 'index']);
+    Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects.index');
     Route::get('/subjects/create', [SubjectController::class, 'create'])->name('subjects.create');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
-    Route::patch('/subjects/{subject}', [SubjectController::class, 'update']);
-    Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy']);
+    Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
+    Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
+    Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
     Route::get('/tasks/create', function () {
         return view('tasks.create');
@@ -55,12 +56,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/calendar/events', [CalendarController::class, 'events']);
 
     // Endpoints Backend (Universidades y Carreras)
-    Route::get('/universities', [UniversityController::class, 'index']);
+    Route::get('/universities', [UniversityController::class, 'index'])->name('universities.index');
     Route::get('/universities/create', [UniversityController::class, 'create'])->name('universities.create');
     Route::post('/universities', [UniversityController::class, 'store'])->name('universities.store');
+    Route::get('/universities/{university}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
+    Route::patch('/universities/{university}', [UniversityController::class, 'update'])->name('universities.update');
+    Route::delete('/universities/{university}', [UniversityController::class, 'destroy'])->name('universities.destroy');
 
-    Route::get('/careers', [CareerController::class, 'index']);
-    Route::post('/careers', [CareerController::class, 'store']);
+    Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
+    Route::get('/careers/create', [CareerController::class, 'create'])->name('careers.create');
+    Route::post('/careers', [CareerController::class, 'store'])->name('careers.store');
+    Route::get('/careers/{career}/edit', [CareerController::class, 'edit'])->name('careers.edit');
+    Route::patch('/careers/{career}', [CareerController::class, 'update'])->name('careers.update');
+    Route::delete('/careers/{career}', [CareerController::class, 'destroy'])->name('careers.destroy');
 
     //vista de prueba
     Route::get('/tasks-demo', function () {

@@ -32,13 +32,20 @@
                     </a>
 
                     <a href="{{ url('/universities') }}"
-                        class="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->is('universities*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
                         Universidad
+                    </a>
+
+                    <a href="{{ url('/careers') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->is('careers*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        Carreras
                     </a>
 
                     <a href="{{ url('/subjects') }}"
                         class="block rounded-xl px-4 py-3 text-sm font-medium transition
-                        {{ request()->is('subjects') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        {{ request()->is('subjects*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
                         Materias
                     </a>
 
@@ -74,6 +81,8 @@
                                     Materias
                                 @elseif(request()->is('universities*'))
                                     Universidad
+                                @elseif(request()->is('careers*'))
+                                    Carreras
                                 @elseif(request()->is('calendar*'))
                                     Calendario
                                 @elseif(request()->routeIs('tasks.create'))

@@ -51,6 +51,43 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+                                <a href="{{ route('subjects.edit', $subject) }}" class="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all" title="Editar">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                </a>
+                                <form method="POST" action="{{ route('subjects.destroy', $subject) }}" class="inline-block"
+                                    x-data
+                                    @submit.prevent="
+                                        Swal.fire({
+                                            title: '¿Archivar asignatura?',
+                                            text: 'La asignatura será ocultada de tus vistas.',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#ef4444',
+                                            cancelButtonColor: '#9ca3af',
+                                            confirmButtonText: 'Sí, archivar',
+                                            cancelButtonText: 'Cancelar',
+                                            customClass: {
+                                                popup: 'font-nunito rounded-2xl shadow-xl border-t-4 border-red-500',
+                                                title: 'font-bold text-gray-800',
+                                                confirmButton: 'rounded-lg font-semibold shadow-md px-5 py-2.5',
+                                                cancelButton: 'rounded-lg font-semibold shadow-sm px-5 py-2.5'
+                                            }
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                $el.submit();
+                                            }
+                                        })
+                                    ">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Archivar">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 @empty

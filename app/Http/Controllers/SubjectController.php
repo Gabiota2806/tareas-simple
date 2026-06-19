@@ -30,7 +30,9 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        $careers = \App\Models\Career::all();
+        $careers = \App\Models\Career::whereHas('university', function($q) {
+            $q->where('user_id', Auth::id());
+        })->get();
         return view('subjects.create', compact('careers'));
     }
 
@@ -60,26 +62,39 @@ class SubjectController extends Controller
         return redirect('/subjects')->with('success', 'Asignatura registrada con éxito.');
     }
 
+    public function edit(Request $request, Subject $subject)
+    {
+        if ($subject->user_id !== Auth::id()) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        $careers = \App\Models\Career::whereHas('university', function($q) {
+            $q->where('user_id', Auth::id());
+        })->get();
+        return view('subjects.edit', compact('subject', 'careers'));
+    }
+
     /**
      * Alterna el estado de vigencia de una asignatura (activo/inactivo).
      */
     public function update(Request $request, Subject $subject)
     {
-        // Validamos la propiedad del registro antes de operar
         if ($subject->user_id !== Auth::id()) {
             abort(403, 'Acción no autorizada.');
         }
 
         $validated = $request->validate([
-            'is_active' => 'required|boolean',
+            'name'       => 'required|string|max:150',
+            'teacher'    => 'nullable|string|max:150',
+            'classroom'  => 'nullable|string|max:50',
+            'color_code' => 'required|string|max:7',
+            'career_id'  => 'required|exists:careers,id',
+            'is_active'  => 'sometimes|boolean',
         ]);
 
         $subject->update($validated);
 
-        return response()->json([
-            'message' => 'Estado de asignatura actualizado correctamente.',
-            'data' => $subject,
-        ]);
+        return redirect()->route('subjects.index')->with('success', 'Materia actualizada correctamente.');
     }
 
     /**
@@ -95,8 +110,6 @@ class SubjectController extends Controller
         // Borrado lógico: marcamos como inactiva en lugar de eliminar el registro
         $subject->update(['is_active' => false]);
 
-        return response()->json([
-            'message' => 'Asignatura eliminada del sistema.',
-        ]);
+        return redirect()->route('subjects.index')->with('success', 'Asignatura archivada correctamente.');
     }
 }

@@ -14,9 +14,7 @@ class UniversityController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json([
-            'data' => $universities,
-        ]);
+        return view('universities.index', compact('universities'));
     }
 
     public function create()
@@ -38,9 +36,44 @@ class UniversityController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return back()->with('success', 'Universidad creada correctamente.');
+        return redirect()->route('universities.index')->with('success', 'Universidad creada correctamente.');
     }
 
+    public function edit(Request $request, University $university)
+    {
+        if ($university->user_id !== $request->user()->id) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        return view('universities.edit', compact('university'));
+    }
+
+    public function update(Request $request, University $university)
+    {
+        if ($university->user_id !== $request->user()->id) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'acronym' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $university->update($validated);
+
+        return redirect()->route('universities.index')->with('success', 'Universidad actualizada correctamente.');
+    }
+
+    public function destroy(Request $request, University $university)
+    {
+        if ($university->user_id !== $request->user()->id) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        $university->delete();
+
+        return redirect()->route('universities.index')->with('success', 'Universidad eliminada correctamente.');
+    }
 }
 
 
