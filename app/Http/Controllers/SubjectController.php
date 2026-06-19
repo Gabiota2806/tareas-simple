@@ -22,9 +22,7 @@ class SubjectController extends Controller
                            ->where('is_active', $isActive)
                            ->get();
 
-        return response()->json([
-            'data' => $subjects,
-        ]);
+        return view('subjects.index', compact('subjects', 'isActive'));
     }
 
     /**
