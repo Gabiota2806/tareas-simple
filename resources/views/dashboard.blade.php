@@ -2,60 +2,7 @@
     <!-- Contenedor general con tipografía Nunito y fondo gris claro del mockup -->
     <div class="font-nunito bg-[#F8FAFC] min-h-screen flex text-[#1E293B]">
         
-        <!-- ================= BARRA LATERAL IZQUIERDA (Escritorio) ================= -->
-        <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-gray-100 p-6 justify-between shrink-0 h-screen sticky top-0">
-            <!-- Parte superior de la barra lateral -->
-            <div class="space-y-8">
-                <!-- Logotipo / Nombre de la App -->
-                <div class="flex items-center gap-2 px-2">
-                    <div class="bg-violeta-moderno text-white p-1.5 rounded-lg shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    </div>
-                    <span class="font-black text-lg tracking-tight text-gray-900">StudyFlow</span>
-                </div>
-
-                <!-- Menú de Navegación -->
-                <nav class="space-y-1">
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 bg-purple-50 text-violeta-moderno rounded-xl text-sm font-bold transition-colors">
-                        <span>📋</span> Mis tareas
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
-                        <span>📅</span> Calendario
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
-                        <span>📁</span> Proyectos
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
-                        <span>🏷️</span> Etiquetas
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 text-gray-500 hover:bg-gray-50 hover:text-gray-900 rounded-xl text-sm font-semibold transition-colors">
-                        <span>📊</span> Estadísticas
-                    </a>
-                </nav>
-
-                <!-- Tarjeta publicitaria/Inspiracional interna -->
-                <div class="bg-purple-50 rounded-2xl p-4 text-center space-y-2 border border-purple-100/50">
-                    <span class="text-2xl">📚</span>
-                    <h4 class="text-xs font-bold text-gray-950">Mantén el foco</h4>
-                    <p class="text-[11px] text-gray-500 leading-relaxed">¡Tú puedes lograr grandes cosas!</p>
-                </div>
-            </div>
-
-            <!-- SECCIÓN INFERIOR IZQUIERDA: Perfil y Rol de Usuario -->
-            <div class="flex items-center gap-3 border-t border-gray-100 pt-4 px-2">
-                <div class="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center font-bold text-violeta-moderno text-sm shadow-inner overflow-hidden">
-                    <span class="uppercase">{{ substr(Auth::user()->name, 0, 2) }}</span>
-                </div>
-                <div class="flex flex-col min-w-0">
-                    <span class="text-xs font-bold text-gray-900 truncate">{{ Auth::user()->name }}</span>
-                    <span class="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded w-max mt-0.5">Estudiante Universidad</span>
-                </div>
-            </div>
-        </aside>
-
         <!-- ================= CONTENIDO PRINCIPAL DE LA APLICACIÓN ================= -->
-        <main x-data="{ pestaña: 'todas', vista: 'mockup' }" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
-            
         <!-- Inicializamos Alpine.js con dos estados: la pestaña activa ('todas') y el modo de vista ('mockup') -->
         <main x-data="{ pestaña: 'todas', vista: 'mockup' }" class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
             
@@ -224,16 +171,19 @@
                         try {
                             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                             
+                            // El backend espera un booleano 'is_completed'
+                            const isCompleted = (estadoDestino === 'completada');
+                            
                             // La URL oficial usa /tasks/ seguido del ID de la tarea
                             await fetch(`/tasks/${tarjetaId}`, {
                                 method: 'PATCH',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': token
+                                    'X-CSRF-TOKEN': token,
+                                    'Accept': 'application/json'
                                 },
-                                // Enviamos el estado con la llave 'state' (o 'status' si su BD lo requiere)
                                 body: JSON.stringify({ 
-                                    state: estadoDestino 
+                                    is_completed: isCompleted 
                                 })
                             });
                             
