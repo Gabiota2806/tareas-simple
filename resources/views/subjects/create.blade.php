@@ -25,6 +25,26 @@
                                focus:border-violet-400 focus:ring-violet-400 transition">
                     </div>
 
+                    <!-- Docente (Opcional) -->
+                    <div>
+                        <label for="teacher" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                            Docente <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                        </label>
+                        <input type="text" id="teacher" name="teacher" placeholder="Ej: Ing. Juan López"
+                               class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito
+                               focus:border-violet-400 focus:ring-violet-400 transition">
+                    </div>
+
+                    <!-- Aula (Opcional) -->
+                    <div>
+                        <label for="classroom" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                            Aula <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                        </label>
+                        <input type="text" id="classroom" name="classroom" placeholder="Ej: Aula 12, Piso 2"
+                               class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito
+                               focus:border-violet-400 focus:ring-violet-400 transition">
+                    </div>
+
                     <!-- Carrera custom dropdown -->
                     <div x-data="{ open: false, selected: 'Seleccione una carrera', selectedId: '' }" class="relative">
                         <label class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
