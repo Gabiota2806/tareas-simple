@@ -15,7 +15,13 @@ Route::get('/', function () {
 
 // 2. Rutas Protegidas de Breeze (Autenticación nativa)
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $tasks = \App\Models\Task::where('user_id', \Illuminate\Support\Facades\Auth::id())
+        ->active()
+        ->with('subject')
+        ->byPriority()
+        ->get();
+        
+    return view('dashboard', compact('tasks'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
