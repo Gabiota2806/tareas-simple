@@ -1,146 +1,152 @@
 <x-app-layout>
-    <!-- Contenedor general con tipografía Nunito y fondo gris claro del mockup -->
-    <div class="font-nunito bg-[#F8FAFC] min-h-screen flex text-[#1E293B]">
-        
-        <!-- ================= CONTENIDO PRINCIPAL DE LA APLICACIÓN ================= -->
-        <!-- Inicializamos Alpine.js con dos estados: la pestaña activa ('todas') y el modo de vista ('mockup') -->
-        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
-            
-            <!-- Barra Superior: Buscador y Botón de Tarea -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                
+    <div class="font-nunito bg-[#F8FAFC] min-h-screen text-[#1E293B]">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
 
-                <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+            <!-- Header del dashboard -->
+            <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">
+                        Resumen general
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Visualizá tus materias, tareas y próximas entregas según la universidad y carrera seleccionadas.
+                    </p>
+                </div>
+
+                <a href="{{ route('tasks.create') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
                     Nueva tarea
                 </a>
-            </div>
+            </section>
 
-            <!-- Filtros de Pestañas (Solo visibles y funcionales en la Vista Mockup plana) -->
-            <div x-show="vista === 'mockup'" x-transition class="flex items-center gap-2 overflow-x-auto pb-3 mb-8 border-b border-gray-100/50 scrollbar-none">
-                <button @click="pestaña = 'todas'" :class="pestaña === 'todas' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all">Todas</button>
-                <button @click="pestaña = 'pendiente'" :class="pestaña === 'pendiente' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Pendientes</button>
-                <button @click="pestaña = 'proceso'" :class="pestaña === 'proceso' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">En progreso</button>
-                <button @click="pestaña = 'completada'" :class="pestaña === 'completada' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Completadas</button>
-            </div>
+            <!-- Cards resumen -->
+            <section class="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">Materias activas</p>
+                    <p class="mt-3 text-3xl font-bold text-violeta-moderno">5</p>
+                    <p class="mt-1 text-xs text-gray-400">Según la carrera seleccionada</p>
+                </div>
 
-            <!-- ================= MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
-            <div class="flex flex-col lg:flex-row gap-5 items-start">
-                
-                <!-- COLUMNA: PENDIENTES -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-gray-700 text-sm mb-4 flex items-center justify-between">
-                        <span>📋 Pendientes</span>
-                    </h3>
-                    <div id="col-pendiente" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="pendiente">
-                        @foreach($tasks->where('is_completed', false) as $task)
-                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
-                                <x-task-card 
-                                    title="{{ $task->title }}"
-                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                                    type="{{ $task->task_type }}"
-                                    priority="{{ $task->priority }}"
-                                    description="{{ $task->description }}"
-                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                                />
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">Tareas pendientes</p>
+                    <p class="mt-3 text-3xl font-bold text-orange-500">
+                        {{ $tasks->where('is_completed', false)->count() }}
+                    </p>
+                    <p class="mt-1 text-xs text-gray-400">Actividades por resolver</p>
+                </div>
+
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">Completadas</p>
+                    <p class="mt-3 text-3xl font-bold text-green-600">
+                        {{ $tasks->where('is_completed', true)->count() }}
+                    </p>
+                    <p class="mt-1 text-xs text-gray-400">Tareas finalizadas</p>
+                </div>
+
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-gray-500">Próximas entregas</p>
+                    <p class="mt-3 text-3xl font-bold text-red-500">
+                        {{ $tasks->where('is_completed', false)->whereNotNull('due_date')->count() }}
+                    </p>
+                    <p class="mt-1 text-xs text-gray-400">Con fecha asignada</p>
+                </div>
+            </section>
+
+            <!-- Materias -->
+            <section class="mb-10">
+                <div class="mb-5 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">
+                            Materias destacadas
+                        </h3>
+
+                        <p class="text-sm text-gray-500">
+                            Desde cada materia se podrá acceder al tablero de tareas correspondiente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+                    <div
+                        class="rounded-2xl border-l-4 border-violet-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    Programación
+                                </h4>
+
+                                <p class="mt-1 text-sm text-gray-500">
+                                    4 tareas pendientes
+                                </p>
                             </div>
-                        @endforeach
-                    </div>
-                </div>
 
-                <!-- COLUMNA: EN PROCESO (Temporalmente vacía al cargar) -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-blue-700 text-sm mb-4 flex items-center justify-between">
-                        <span>⚡ En progreso</span>
-                    </h3>
-                    <div id="col-proceso" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="proceso">
-                        <!-- Destino temporal -->
-                    </div>
-                </div>
+                        </div>
 
-                <!-- COLUMNA: COMPLETADAS -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-green-700 text-sm mb-4 flex items-center justify-between">
-                        <span>✅ Completadas</span>
-                    </h3>
-                    <div id="col-completada" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="completada">
-                        @foreach($tasks->where('is_completed', true) as $task)
-                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
-                                <x-task-card 
-                                    title="{{ $task->title }}"
-                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                                    type="{{ $task->task_type }}"
-                                    priority="{{ $task->priority }}"
-                                    description="{{ $task->description }}"
-                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                                />
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
+                    </div>
+
+                    <div
+                        class="rounded-2xl border-l-4 border-green-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    Base de Datos
+                                </h4>
+
+                                <p class="mt-1 text-sm text-gray-500">
+                                    2 tareas pendientes
+                                </p>
                             </div>
-                        @endforeach
+
+                        </div>
+
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
                     </div>
+
+                    <div
+                        class="rounded-2xl border-l-4 border-orange-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    Inglés
+                                </h4>
+
+                                <p class="mt-1 text-sm text-gray-500">
+                                    1 tarea pendiente
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
+                    </div>
+
                 </div>
-            </div> <!-- <-- CIERRA EL CONTENEDOR FLEX/GRID DE LAS COLUMNAS -->
+            </section>
+
         </main>
 
-
-        <!-- Botón Flotante (Exclusivo Vista Móvil) -->
-        <div class="fixed bottom-6 right-6 lg:hidden z-50">
-            <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg font-bold active:scale-95 transition-transform hover:bg-opacity-90">
+        <!-- Botón flotante móvil -->
+        <div class="fixed bottom-6 right-6 z-50 lg:hidden">
+            <a href="{{ route('tasks.create') }}"
+                class="flex h-14 w-14 items-center justify-center rounded-xl bg-violeta-moderno text-2xl font-bold text-white shadow-lg transition hover:bg-opacity-90 active:scale-95">
                 +
             </a>
         </div>
-
     </div>
 
-        <!-- Script de Inicialización utilizando la instancia global -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Buscamos todas las columnas grises que tengan la clase de arrastre
-            const columnas = document.querySelectorAll('.contenedor-sortable');
-
-            columnas.forEach(columna => {
-                // Usamos window.Sortable que registramos en app.js
-                new window.Sortable(columna, {
-                    group: 'kanban-tareas', // LLAVE MAESTRA: Permite mover tarjetas ENTRE columnas
-                    animation: 150,         // Movimiento fluido en milisegundos
-                    ghostClass: 'bg-purple-50', // Fondo de la columna mientras arrastras
-                    chosenClass: 'opacity-50',   // Transparencia al seleccionar la tarjeta
-                    
-                    // Evento automático al soltar la tarjeta
-                    onEnd: async function (evt) {
-                        const tarjetaId = evt.item.getAttribute('data-id');
-                        const estadoDestino = evt.to.getAttribute('data-estado');
-
-                        console.log(`¡Éxito! Tarjeta ${tarjetaId} movida a: ${estadoDestino}`);
-
-                        // Aquí se enviará la petición PATCH en la siguiente actividad
-                                                // Conectamos directamente al endpoint PATCH oficial de UniTask
-                        try {
-                            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                            
-                            // El backend espera un booleano 'is_completed'
-                            const isCompleted = (estadoDestino === 'completada');
-                            
-                            // La URL oficial usa /tasks/ seguido del ID de la tarea
-                            await fetch(`/tasks/${tarjetaId}`, {
-                                method: 'PATCH',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({ 
-                                    is_completed: isCompleted 
-                                })
-                            });
-                            
-                            console.log(`¡Petición enviada! Tarea ${tarjetaId} actualizada a: ${estadoDestino}`);
-                        } catch (error) {
-                            console.error('Error de red al conectar con el backend:', error);
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 </x-app-layout>
-
