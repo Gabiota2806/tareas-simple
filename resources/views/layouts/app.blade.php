@@ -1,36 +1,141 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <title>UniTask</title>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body class="font-sans antialiased bg-gray-100">
+    <div x-data="{ userMenuOpen: false }" class="min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-gray-100 bg-white lg:block">
+            <div class="flex h-full flex-col px-5 py-6">
+                <a href="{{ route('dashboard') }}" class="text-2xl font-bold text-violeta-moderno">
+                    UniTask
+                </a>
+
+                <nav class="mt-10 space-y-2">
+                    <a href="{{ route('dashboard') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->routeIs('dashboard') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        Inicio
+                    </a>
+
+                    <a href="{{ url('/universities') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                        Universidad
+                    </a>
+
+                    <a href="{{ url('/subjects') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium transition
+                        {{ request()->is('subjects') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}">
+                        Materias
+                    </a>
+
+                    <a href="{{ url('/calendar') }}"
+                        class="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                        Calendario
+                    </a>
+                </nav>
+
+                <div class="mt-auto rounded-2xl bg-violet-50 p-4 text-sm text-violeta-moderno">
+                    <p class="font-semibold">Mantené el foco</p>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Organizá tu cursada paso a paso.
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main wrapper -->
+        <div class="lg:ml-64">
+
+            <!-- Top bar -->
+            <header class="sticky top-0 z-30 border-b border-gray-100 bg-white/90 backdrop-blur-md">
+                <div class="flex h-16 items-center justify-between px-6">
+                    <div>
+                        @isset($header)
+                            {{ $header }}
+                        @else
+                            <h1 class="text-lg font-semibold text-gray-800">
+                                @if (request()->routeIs('dashboard'))
+                                    Inicio
+                                @elseif(request()->is('subjects*'))
+                                    Materias
+                                @elseif(request()->is('universities*'))
+                                    Universidad
+                                @elseif(request()->is('calendar*'))
+                                    Calendario
+                                @elseif(request()->routeIs('tasks.create'))
+                                    Nueva tarea
+                                @else
+                                    UniTask
+                                @endif
+                            </h1>
+                        @endisset
                     </div>
-                </header>
-            @endisset
 
-            <!-- Page Content -->
+                    <div class="relative">
+                        <button @click="userMenuOpen = !userMenuOpen"
+                            class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50">
+                            <span
+                                class="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 font-bold text-violeta-moderno">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </span>
+
+                            <span class="hidden sm:block">
+                                {{ Auth::user()->name }}
+                            </span>
+
+                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition
+                            class="absolute right-0 mt-3 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
+                            style="display: none;">
+                            <div class="border-b border-gray-100 px-4 py-3">
+                                <p class="font-semibold text-gray-800">{{ Auth::user()->name }}</p>
+                                <p class="text-xs text-gray-400">{{ Auth::user()->email }}</p>
+                            </div>
+
+                            <a href="{{ route('profile.edit') }}"
+                                class="block rounded-xl px-4 py-3 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                                Perfil
+                            </a>
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+
+                                <button type="submit"
+                                    class="w-full rounded-xl px-4 py-3 text-left text-sm text-red-500 transition hover:bg-red-50">
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page content -->
             <main>
                 {{ $slot }}
             </main>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
