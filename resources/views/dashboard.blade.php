@@ -33,7 +33,7 @@
                         <span>📋 Pendientes</span>
                     </h3>
                     <div id="col-pendiente" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="pendiente">
-                        @foreach($tasks->where('is_completed', false) as $task)
+                        @foreach($tasks->where('status', 'pending') as $task)
                             <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
                                 <x-task-card 
                                     title="{{ $task->title }}"
@@ -54,7 +54,18 @@
                         <span>⚡ En progreso</span>
                     </h3>
                     <div id="col-proceso" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="proceso">
-                        <!-- Destino temporal -->
+                        @foreach($tasks->where('status', 'in_progress') as $task)
+                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
+                                <x-task-card 
+                                    title="{{ $task->title }}"
+                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
+                                    type="{{ $task->task_type }}"
+                                    priority="{{ $task->priority }}"
+                                    description="{{ $task->description }}"
+                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
+                                />
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -64,7 +75,7 @@
                         <span>✅ Completadas</span>
                     </h3>
                     <div id="col-completada" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="completada">
-                        @foreach($tasks->where('is_completed', true) as $task)
+                        @foreach($tasks->where('status', 'completed') as $task)
                             <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
                                 <x-task-card 
                                     title="{{ $task->title }}"
@@ -117,8 +128,10 @@
                         try {
                             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                             
-                            // El backend espera un booleano 'is_completed'
-                            const isCompleted = (estadoDestino === 'completada');
+                            // Mapeamos el estado visual al estado esperado por el backend
+                            let backendStatus = 'pending';
+                            if (estadoDestino === 'proceso') backendStatus = 'in_progress';
+                            if (estadoDestino === 'completada') backendStatus = 'completed';
                             
                             // La URL oficial usa /tasks/ seguido del ID de la tarea
                             await fetch(`/tasks/${tarjetaId}`, {
@@ -129,7 +142,7 @@
                                     'Accept': 'application/json'
                                 },
                                 body: JSON.stringify({ 
-                                    is_completed: isCompleted 
+                                    status: backendStatus 
                                 })
                             });
                             
