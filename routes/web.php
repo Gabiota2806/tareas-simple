@@ -37,16 +37,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/create', function () {
         return view('tasks.create');
     })->name('tasks.create');
-    
+
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
-    
+
     // API Dinámica - Calendario
     Route::get('/calendar/events', [CalendarController::class, 'events']);
-    
+
     // Endpoints Backend (Universidades y Carreras)
     Route::get('/universities', [UniversityController::class, 'index']);
     Route::post('/universities', [UniversityController::class, 'store']);
@@ -54,4 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/careers', [CareerController::class, 'index']);
     Route::post('/careers', [CareerController::class, 'store']);
 
+    //vista de prueba
+    Route::get('/tasks-demo', function () {
+        return view('tasks.index');
+    })->middleware('auth');
 });
