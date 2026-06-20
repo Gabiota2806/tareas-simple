@@ -1,17 +1,24 @@
 <x-app-layout>
-    <!-- Contenedor general con tipografía Nunito y fondo gris claro del mockup -->
-    <div class="font-nunito bg-[#F8FAFC] min-h-screen flex text-[#1E293B]">
-        
-        <!-- ================= CONTENIDO PRINCIPAL DE LA APLICACIÓN ================= -->
-        <!-- Inicializamos Alpine.js con dos estados: la pestaña activa ('todas') y el modo de vista ('mockup') -->
-        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
-            
-            <!-- Barra Superior: Buscador y Botón de Tarea -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                
+    <div class="font-nunito bg-[#F8FAFC] min-h-screen text-[#1E293B]">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
 
-                <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno hover:bg-opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all self-end md:self-auto">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+            <!-- Header del dashboard -->
+            <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">
+                        Resumen general
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Visualizá tus materias, tareas y próximas entregas según la universidad y carrera seleccionadas.
+                    </p>
+                </div>
+
+                <a href="{{ route('tasks.create') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
                     Nueva tarea
                 </a>
             </div>
@@ -86,20 +93,69 @@
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                 />
                             </div>
-                        @endforeach
+
+                        </div>
+
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
                     </div>
+
+                    <div
+                        class="rounded-2xl border-l-4 border-green-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    Base de Datos
+                                </h4>
+
+                                <p class="mt-1 text-sm text-gray-500">
+                                    2 tareas pendientes
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
+                    </div>
+
+                    <div
+                        class="rounded-2xl border-l-4 border-orange-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    Inglés
+                                </h4>
+
+                                <p class="mt-1 text-sm text-gray-500">
+                                    1 tarea pendiente
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <a href="{{ route('subjects.index') }}"
+                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero →
+                        </a>
+                    </div>
+
                 </div>
-            </div> <!-- <-- CIERRA EL CONTENEDOR FLEX/GRID DE LAS COLUMNAS -->
+            </section>
+
         </main>
 
-
-        <!-- Botón Flotante (Exclusivo Vista Móvil) -->
-        <div class="fixed bottom-6 right-6 lg:hidden z-50">
-            <a href="{{ route('tasks.create') }}" class="bg-violeta-moderno text-white w-14 h-14 rounded-xl flex items-center justify-center text-2xl shadow-lg font-bold active:scale-95 transition-transform hover:bg-opacity-90">
+        <!-- Botón flotante móvil -->
+        <div class="fixed bottom-6 right-6 z-50 lg:hidden">
+            <a href="{{ route('tasks.create') }}"
+                class="flex h-14 w-14 items-center justify-center rounded-xl bg-violeta-moderno text-2xl font-bold text-white shadow-lg transition hover:bg-opacity-90 active:scale-95">
                 +
             </a>
         </div>
-
     </div>
 
         <!-- Script de Inicialización utilizando la instancia global -->
@@ -156,4 +212,3 @@
         });
     </script>
 </x-app-layout>
-

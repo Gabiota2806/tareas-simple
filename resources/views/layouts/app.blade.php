@@ -16,7 +16,13 @@
 </head>
 
 <body class="font-sans antialiased bg-gray-100">
-    <div x-data="{ userMenuOpen: false }" class="min-h-screen">
+    <div x-data="{
+        userMenuOpen: false,
+        universityOpen: false,
+        careerOpen: false,
+        selectedUniversity: 'UTN',
+        selectedCareer: 'TUP'
+    }" class="min-h-screen">
 
         <!-- Sidebar -->
         <aside class="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-gray-100 bg-white lg:block">
@@ -97,9 +103,9 @@
                         @endisset
                     </div>
 
-                    <!-- Buscador -->
-                    <div class="hidden md:block flex-1 max-w-xl">
-                        <div class="relative">
+                    <!-- Buscador y filtros académicos -->
+                    <div class="hidden md:grid flex-1 max-w-4xl grid-cols-[1fr_140px_160px] items-center gap-3">
+                        <div class="relative flex-1">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
@@ -109,6 +115,74 @@
 
                             <input type="text" placeholder="Buscar tareas, materias o fechas..."
                                 class="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:bg-white focus:ring-1 focus:ring-violeta-moderno">
+                        </div>
+
+                        <div class="relative w-[140px]">
+                            <span
+                                class="absolute -top-2 left-4 bg-white px-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                                Universidad
+                            </span>
+
+                            <button @click="universityOpen = !universityOpen"
+                                class="flex w-full items-center justify-between rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300">
+
+                                <span x-text="selectedUniversity"></span>
+
+                                <svg class="h-4 w-4 text-violeta-moderno" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="universityOpen" @click.away="universityOpen = false" x-transition
+                                class="absolute z-50 mt-2 w-full rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
+                                style="display:none;">
+
+                                <button @click="selectedUniversity='UTN'; universityOpen=false"
+                                    class="w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-violet-50">
+                                    UTN
+                                </button>
+
+                                <button @click="selectedUniversity='UNaF'; universityOpen=false"
+                                    class="w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-violet-50">
+                                    UNaF
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="relative w-[160px]">
+                            <span
+                                class="absolute -top-2 left-4 bg-white px-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                                Carrera
+                            </span>
+
+                            <button @click="careerOpen = !careerOpen"
+                                class="flex w-full items-center justify-between rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300">
+
+                                <span x-text="selectedCareer"></span>
+
+                                <svg class="h-4 w-4 text-violeta-moderno" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="careerOpen" @click.away="careerOpen = false" x-transition
+                                class="absolute z-50 mt-2 w-full rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
+                                style="display:none;">
+
+                                <button @click="selectedCareer='TUP'; careerOpen=false"
+                                    class="w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-violet-50">
+                                    TUP
+                                </button>
+
+                                <button @click="selectedCareer='Ing. Sistemas'; careerOpen=false"
+                                    class="w-full rounded-xl px-3 py-2 text-left text-sm hover:bg-violet-50">
+                                    Ing. Sistemas
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -157,10 +231,22 @@
                     </div>
                 </div>
 
-                <!-- Buscador móvil -->
-                <div class="border-t border-gray-100 px-6 py-3 md:hidden">
+                <!-- Buscador y filtros móvil -->
+                <div class="space-y-3 border-t border-gray-100 px-6 py-3 md:hidden">
                     <input type="text" placeholder="Buscar..."
                         class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+
+                    <select
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+                        <option>UTN</option>
+                        <option>UNaF</option>
+                    </select>
+
+                    <select
+                        class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+                        <option>TUP</option>
+                        <option>Ing. Sistemas</option>
+                    </select>
                 </div>
             </header>
 
