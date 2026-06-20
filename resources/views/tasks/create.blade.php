@@ -16,7 +16,8 @@
                     Completá los datos principales para organizar tu actividad académica.
                 </p>
 
-                <form class="mt-8" x-data="{ taskType: 'normal', priority: 'low' }">
+                <form method="POST" action="{{ route('tasks.store') }}" class="mt-8" x-data="{ taskType: '{{ old('task_type', 'normal') }}', priority: '{{ old('priority', 'low') }}' }">
+                    @csrf
                     <div class="grid gap-8 lg:grid-cols-2">
 
                         <div class="space-y-6">
@@ -25,9 +26,10 @@
                                     Título de la tarea <span class="text-red-500">*</span>
                                 </label>
 
-                                <input id="title" type="text" name="title"
+                                <input id="title" type="text" name="title" value="{{ old('title') }}" required
                                     placeholder="Ej: Estudiar para el parcial de Algoritmos"
                                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-violeta-moderno">
+                                @error('title') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -37,7 +39,8 @@
 
                                 <textarea id="description" name="description" rows="5"
                                     placeholder="Agregá una descripción detallada..."
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-violeta-moderno"></textarea>
+                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-violeta-moderno">{{ old('description') }}</textarea>
+                                @error('description') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -45,16 +48,52 @@
                                     Materia activa <span class="text-red-500">*</span>
                                 </label>
 
-                                <select id="subject_id" name="subject_id"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
-                                    <option value="">Seleccionar materia</option>
-                                    <option value="1">Algoritmos</option>
-                                    <option value="3">Web Development</option>
-                                </select>
+                                <div x-data="{ open: false, selected: '{{ old('subject_id') }}', get selectedName() {
+                                    const subjects = @json($subjects->mapWithKeys(fn($s) => [$s->id => $s->name]));
+                                    return subjects[this.selected] || 'Seleccionar materia';
+                                } }" class="relative w-full">
+                                    <input type="hidden" name="subject_id" x-model="selected" required>
+                                    
+                                    <button type="button" @click="open = !open"
+                                        class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                        
+                                        <span x-text="selectedName" class="truncate flex-1 text-left" :class="selected === '' ? 'text-gray-400' : 'text-gray-700'"></span>
 
+                                        <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" @click.away="open = false" x-transition
+                                        class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                                        style="display:none;">
+                                        
+                                        <button type="button" @click="selected = ''; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            Seleccionar materia
+                                        </button>
+
+                                        @foreach($subjects as $subject)
+                                            <button type="button" @click="selected = '{{ $subject->id }}'; open = false" 
+                                                class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                                :class="selected === '{{ $subject->id }}' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                                {{ $subject->name }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @error('subject_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+
+                                @if($subjects->isEmpty())
+                                <p class="mt-2 text-xs text-red-400 font-medium">
+                                    No tienes materias activas. <a href="{{ route('subjects.create') }}" class="underline hover:text-red-500">Crear una materia</a>.
+                                </p>
+                                @else
                                 <p class="mt-2 text-xs text-gray-400">
                                     Solo se muestran materias activas del usuario.
                                 </p>
+                                @endif
                             </div>
 
                             <div>
@@ -150,8 +189,9 @@
                                     Fecha de vencimiento
                                 </label>
 
-                                <input id="due_date" type="date" name="due_date"
+                                <input id="due_date" type="date" name="due_date" value="{{ old('due_date') }}"
                                     class="w-full rounded-xl border border-violet-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
+                                @error('due_date') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -159,8 +199,9 @@
                                     Hora opcional
                                 </label>
 
-                                <input id="task_time" type="time" name="task_time"
+                                <input id="task_time" type="time" name="task_time" value="{{ old('task_time') }}"
                                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
+                                @error('task_time') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -168,8 +209,9 @@
                                     Tiempo estimado
                                 </label>
 
-                                <input id="estimated_time" type="text" name="estimated_time" placeholder="Ej: 2h 30m"
+                                <input id="estimated_time" type="number" min="1" name="estimated_time" value="{{ old('estimated_time') }}" placeholder="Ej: 120 (en minutos)"
                                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-violeta-moderno">
+                                @error('estimated_time') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
@@ -177,22 +219,48 @@
                                     Recordatorio
                                 </label>
 
-                                <select id="reminder" name="reminder"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
-                                    <option>Sin recordatorio</option>
-                                    <option>1 hora antes</option>
-                                    <option>1 día antes</option>
-                                    <option>1 semana antes</option>
-                                </select>
+                                <div x-data="{ open: false, selected: '{{ old('reminder', '0') }}', get selectedName() {
+                                    return this.selected === '1' ? 'Sí, enviar alerta al correo' : 'No';
+                                } }" class="relative w-full">
+                                    <input type="hidden" name="reminder" x-model="selected">
+                                    
+                                    <button type="button" @click="open = !open"
+                                        class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                        
+                                        <span x-text="selectedName" class="truncate flex-1 text-left"></span>
+
+                                        <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" @click.away="open = false" x-transition
+                                        class="absolute z-50 mt-2 w-full rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                                        style="display:none;">
+                                        
+                                        <button type="button" @click="selected = '0'; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '0' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            No
+                                        </button>
+
+                                        <button type="button" @click="selected = '1'; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '1' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            Sí, enviar alerta al correo
+                                        </button>
+                                    </div>
+                                </div>
+                                @error('reminder') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
 
                     <div class="mt-8 flex items-center justify-end gap-4 border-t border-gray-100 pt-6">
-                        <button type="button"
+                        <a href="{{ route('dashboard') }}"
                             class="rounded-xl border border-gray-200 px-5 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-50">
                             Cancelar
-                        </button>
+                        </a>
 
                         <button type="submit"
                             class="rounded-xl bg-violeta-moderno px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg">

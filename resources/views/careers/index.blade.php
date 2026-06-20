@@ -6,17 +6,7 @@
                     Mis Carreras
                 </h1>
                 <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-                    <form method="GET" action="{{ route('careers.index') }}" class="w-full sm:w-64">
-                        <select name="university_id" onchange="this.form.submit()"
-                                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-gray-600 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition text-sm">
-                            <option value="">Todas las universidades</option>
-                            @foreach($universities as $university)
-                                <option value="{{ $university->id }}" {{ $selectedUniversity == $university->id ? 'selected' : '' }}>
-                                    {{ $university->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </form>
+
                     <a href="{{ route('careers.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md transition-all font-nunito flex-shrink-0">
                         + Nueva Carrera
                     </a>
