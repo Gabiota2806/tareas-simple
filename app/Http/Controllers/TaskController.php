@@ -89,6 +89,11 @@ class TaskController extends Controller
         }
 
         $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:200',
+            'description' => 'nullable|string',
+            'task_type' => 'sometimes|required|in:parcial,final,tp,normal',
+            'priority' => 'sometimes|required|in:low,medium,high',
+            'due_date' => 'nullable|date',
             'is_completed' => 'sometimes|boolean',
             'status' => 'sometimes|in:pending,in_progress,completed'
         ]);

@@ -21,13 +21,14 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
                     <div>
-                        <label for="university_id" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">Universidad</label>
-                        <select id="university_id" name="university_id" required class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
-                            <option value="">Seleccione una universidad</option>
-                            @foreach($universities as $university)
-                                <option value="{{ $university->id }}" {{ $career->university_id == $university->id ? 'selected' : '' }}>{{ $university->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-bold text-gray-700 mb-1 font-nunito">Universidad</label>
+                        <div class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-700 shadow-sm font-nunito flex items-center justify-between cursor-not-allowed">
+                            <span class="truncate">
+                                {{ $career->university->name }}
+                            </span>
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </div>
+                        <input type="hidden" name="university_id" value="{{ $career->university_id }}">
                         <x-input-error :messages="$errors->get('university_id')" class="mt-2" />
                     </div>
                     <div>

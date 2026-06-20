@@ -48,15 +48,41 @@
                                     Materia activa <span class="text-red-500">*</span>
                                 </label>
 
-                                <select id="subject_id" name="subject_id" required
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
-                                    <option value="">Seleccionar materia</option>
-                                    @foreach($subjects as $subject)
-                                        <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                            {{ $subject->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div x-data="{ open: false, selected: '{{ old('subject_id') }}', get selectedName() {
+                                    const subjects = @json($subjects->mapWithKeys(fn($s) => [$s->id => $s->name]));
+                                    return subjects[this.selected] || 'Seleccionar materia';
+                                } }" class="relative w-full">
+                                    <input type="hidden" name="subject_id" x-model="selected" required>
+                                    
+                                    <button type="button" @click="open = !open"
+                                        class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                        
+                                        <span x-text="selectedName" class="truncate flex-1 text-left" :class="selected === '' ? 'text-gray-400' : 'text-gray-700'"></span>
+
+                                        <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" @click.away="open = false" x-transition
+                                        class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                                        style="display:none;">
+                                        
+                                        <button type="button" @click="selected = ''; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            Seleccionar materia
+                                        </button>
+
+                                        @foreach($subjects as $subject)
+                                            <button type="button" @click="selected = '{{ $subject->id }}'; open = false" 
+                                                class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                                :class="selected === '{{ $subject->id }}' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                                {{ $subject->name }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
                                 @error('subject_id') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
 
                                 @if($subjects->isEmpty())
@@ -193,11 +219,38 @@
                                     Recordatorio
                                 </label>
 
-                                <select id="reminder" name="reminder"
-                                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
-                                    <option value="0" {{ old('reminder') == '0' ? 'selected' : '' }}>No</option>
-                                    <option value="1" {{ old('reminder') == '1' ? 'selected' : '' }}>Sí, enviar alerta al correo</option>
-                                </select>
+                                <div x-data="{ open: false, selected: '{{ old('reminder', '0') }}', get selectedName() {
+                                    return this.selected === '1' ? 'Sí, enviar alerta al correo' : 'No';
+                                } }" class="relative w-full">
+                                    <input type="hidden" name="reminder" x-model="selected">
+                                    
+                                    <button type="button" @click="open = !open"
+                                        class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                        
+                                        <span x-text="selectedName" class="truncate flex-1 text-left"></span>
+
+                                        <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" @click.away="open = false" x-transition
+                                        class="absolute z-50 mt-2 w-full rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                                        style="display:none;">
+                                        
+                                        <button type="button" @click="selected = '0'; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '0' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            No
+                                        </button>
+
+                                        <button type="button" @click="selected = '1'; open = false" 
+                                            class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === '1' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                            Sí, enviar alerta al correo
+                                        </button>
+                                    </div>
+                                </div>
                                 @error('reminder') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>

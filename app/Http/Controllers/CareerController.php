@@ -11,27 +11,28 @@ class CareerController extends Controller
 
     public function index(Request $request)
     {
-        $universities = University::where('user_id', $request->user()->id)->orderBy('name')->get();
-        $selectedUniversity = $request->query('university_id');
+        $activeUniId = session('active_university_id');
 
-        $careersQuery = Career::whereHas('university', function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
-            ->with('university');
-
-        if ($selectedUniversity) {
-            $careersQuery->where('university_id', $selectedUniversity);
+        if (!$activeUniId) {
+            $careers = collect();
+        } else {
+            $careers = Career::where('university_id', $activeUniId)
+                ->whereHas('university', function ($query) use ($request) {
+                    $query->where('user_id', $request->user()->id);
+                })
+                ->with('university')
+                ->orderBy('name')
+                ->get();
         }
 
-        $careers = $careersQuery->orderBy('name')->get();
-
-        return view('careers.index', compact('careers', 'universities', 'selectedUniversity'));
+        return view('careers.index', compact('careers'));
     }
 
     public function create(Request $request)
     {
         $universities = University::where('user_id', $request->user()->id)->get();
-        return view('careers.create', compact('universities'));
+        $activeUniId = session('active_university_id');
+        return view('careers.create', compact('universities', 'activeUniId'));
     }
 
     public function store(Request $request)

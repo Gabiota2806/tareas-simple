@@ -4,149 +4,116 @@
 
             <!-- Header del dashboard -->
             <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                @php
+                    $activeUniId = session('active_university_id');
+                    
+                    if (request()->has('career_id')) {
+                        session(['dashboard_career_id' => request('career_id')]);
+                    }
+                    $selectedCareer = session('dashboard_career_id');
+
+                    $careers = \App\Models\Career::where('university_id', $activeUniId)
+                        ->whereHas('university', fn($q) => $q->where('user_id', Auth::id()))
+                        ->orderBy('name')
+                        ->get();
+
+                    $subjectsQuery = \App\Models\Subject::where('user_id', Auth::id())
+                        ->where('is_active', true)
+                        ->whereHas('career', fn($q) => $q->where('university_id', $activeUniId));
+                    
+                    if ($selectedCareer) {
+                        $subjectsQuery->where('career_id', $selectedCareer);
+                    }
+
+                    $activeSubjects = $subjectsQuery->get();
+                @endphp
+
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">
                         Resumen general
                     </h2>
 
                     <p class="mt-1 text-sm text-gray-500">
-                        Visualizá tus materias, tareas y próximas entregas según la universidad y carrera seleccionadas.
+                        Visualizá tus materias activas y tareas según la carrera seleccionada.
                     </p>
                 </div>
 
-                <a href="{{ route('tasks.create') }}"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Nueva tarea
-                </a>
-            </div>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <form method="GET" action="{{ route('dashboard') }}" class="w-full sm:w-56">
+                        <div x-data="{ open: false }" class="relative w-full">
+                            <button type="button" @click="open = !open"
+                                class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300">
+                                
+                                <span class="truncate flex-1 text-left">
+                                    @if($selectedCareer)
+                                        {{ $careers->firstWhere('id', $selectedCareer)->name ?? 'Todas las carreras' }}
+                                    @else
+                                        Todas las carreras
+                                    @endif
+                                </span>
 
-            <!-- Filtros de Pestañas (Solo visibles y funcionales en la Vista Mockup plana) -->
-            <div x-show="vista === 'mockup'" x-transition class="flex items-center gap-2 overflow-x-auto pb-3 mb-8 border-b border-gray-100/50 scrollbar-none">
-                <button @click="pestaña = 'todas'" :class="pestaña === 'todas' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold shadow-sm transition-all">Todas</button>
-                <button @click="pestaña = 'pendiente'" :class="pestaña === 'pendiente' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Pendientes</button>
-                <button @click="pestaña = 'proceso'" :class="pestaña === 'proceso' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">En progreso</button>
-                <button @click="pestaña = 'completada'" :class="pestaña === 'completada' ? 'bg-violeta-moderno text-white' : 'bg-white text-gray-500 border border-gray-100'" class="px-4 py-1.5 rounded-xl text-xs font-bold border border-gray-100 transition-all">Completadas</button>
-            </div>
+                                <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
 
-            <!-- ================= MODO DRAG & DROP REAL (Columnas Kanban funcionales) ================= -->
-            <div class="flex flex-col lg:flex-row gap-5 items-start">
-                
-                <!-- COLUMNA: PENDIENTES -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-gray-700 text-sm mb-4 flex items-center justify-between">
-                        <span>📋 Pendientes</span>
-                    </h3>
-                    <div id="col-pendiente" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="pendiente">
-                        @foreach($tasks->where('status', 'pending') as $task)
-                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
-                                <x-task-card 
-                                    title="{{ $task->title }}"
-                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                                    type="{{ $task->task_type }}"
-                                    priority="{{ $task->priority }}"
-                                    description="{{ $task->description }}"
-                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                                />
+                            <div x-show="open" @click.away="open = false" x-transition
+                                class="absolute z-50 mt-2 w-full rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                                style="display:none;">
+                                
+                                <button type="submit" name="career_id" value="" 
+                                    class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition {{ !$selectedCareer ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700' }}">
+                                    Todas las carreras
+                                </button>
+
+                                @foreach($careers as $career)
+                                    <button type="submit" name="career_id" value="{{ $career->id }}" 
+                                        class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition {{ $selectedCareer == $career->id ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700' }}">
+                                        {{ $career->name }}
+                                    </button>
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- COLUMNA: EN PROCESO (Temporalmente vacía al cargar) -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-blue-700 text-sm mb-4 flex items-center justify-between">
-                        <span>⚡ En progreso</span>
-                    </h3>
-                    <div id="col-proceso" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="proceso">
-                        @foreach($tasks->where('status', 'in_progress') as $task)
-                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
-                                <x-task-card 
-                                    title="{{ $task->title }}"
-                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                                    type="{{ $task->task_type }}"
-                                    priority="{{ $task->priority }}"
-                                    description="{{ $task->description }}"
-                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                                />
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- COLUMNA: COMPLETADAS -->
-                <div class="bg-gray-100/70 p-4 rounded-2xl w-full lg:w-1/3 flex flex-col border border-gray-200/50">
-                    <h3 class="font-bold text-green-700 text-sm mb-4 flex items-center justify-between">
-                        <span>✅ Completadas</span>
-                    </h3>
-                    <div id="col-completada" class="space-y-3 min-h-[450px] contenedor-sortable" data-estado="completada">
-                        @foreach($tasks->where('status', 'completed') as $task)
-                            <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing">
-                                <x-task-card 
-                                    title="{{ $task->title }}"
-                                    subject="{{ $task->subject->name ?? 'Sin materia' }}"
-                                    type="{{ $task->task_type }}"
-                                    priority="{{ $task->priority }}"
-                                    description="{{ $task->description }}"
-                                    dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                                />
-                            </div>
-
                         </div>
+                    </form>
 
-                        <a href="{{ route('subjects.index') }}"
-                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
-                            Ver tablero →
-                        </a>
-                    </div>
-
-                    <div
-                        class="rounded-2xl border-l-4 border-green-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="font-bold text-gray-800">
-                                    Base de Datos
-                                </h4>
-
-                                <p class="mt-1 text-sm text-gray-500">
-                                    2 tareas pendientes
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <a href="{{ route('subjects.index') }}"
-                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
-                            Ver tablero →
-                        </a>
-                    </div>
-
-                    <div
-                        class="rounded-2xl border-l-4 border-orange-500 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="font-bold text-gray-800">
-                                    Inglés
-                                </h4>
-
-                                <p class="mt-1 text-sm text-gray-500">
-                                    1 tarea pendiente
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <a href="{{ route('subjects.index') }}"
-                            class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
-                            Ver tablero →
-                        </a>
-                    </div>
-
+                    <a href="{{ route('tasks.create') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md w-full sm:w-auto">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Nueva tarea
+                    </a>
                 </div>
             </section>
 
+            <!-- ================= GRID DE MATERIAS ================= -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                @forelse($activeSubjects as $subject)
+                    <div class="rounded-2xl border-l-4 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md flex flex-col justify-between" style="border-left-color: {{ $subject->color_code }}">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h4 class="font-bold text-gray-800">
+                                    {{ $subject->name }}
+                                </h4>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {{ $subject->tasks()->active()->where('status', '!=', 'completed')->count() }} tareas pendientes
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('subjects.show', $subject->id) }}" class="inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
+                            Ver tablero Kanban →
+                        </a>
+                    </div>
+                @empty
+                    <div class="col-span-full p-8 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-gray-500">No tienes materias activas. ¡Comienza creando una!</p>
+                        <a href="{{ route('subjects.create') }}" class="mt-4 inline-block bg-violet-100 text-violet-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-violet-200">
+                            Crear materia
+                        </a>
+                    </div>
+                @endforelse
+            </div>
         </main>
 
         <!-- Botón flotante móvil -->
@@ -157,58 +124,4 @@
             </a>
         </div>
     </div>
-
-        <!-- Script de Inicialización utilizando la instancia global -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Buscamos todas las columnas grises que tengan la clase de arrastre
-            const columnas = document.querySelectorAll('.contenedor-sortable');
-
-            columnas.forEach(columna => {
-                // Usamos window.Sortable que registramos en app.js
-                new window.Sortable(columna, {
-                    group: 'kanban-tareas', // LLAVE MAESTRA: Permite mover tarjetas ENTRE columnas
-                    animation: 150,         // Movimiento fluido en milisegundos
-                    ghostClass: 'bg-purple-50', // Fondo de la columna mientras arrastras
-                    chosenClass: 'opacity-50',   // Transparencia al seleccionar la tarjeta
-                    
-                    // Evento automático al soltar la tarjeta
-                    onEnd: async function (evt) {
-                        const tarjetaId = evt.item.getAttribute('data-id');
-                        const estadoDestino = evt.to.getAttribute('data-estado');
-
-                        console.log(`¡Éxito! Tarjeta ${tarjetaId} movida a: ${estadoDestino}`);
-
-                        // Aquí se enviará la petición PATCH en la siguiente actividad
-                                                // Conectamos directamente al endpoint PATCH oficial de UniTask
-                        try {
-                            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                            
-                            // Mapeamos el estado visual al estado esperado por el backend
-                            let backendStatus = 'pending';
-                            if (estadoDestino === 'proceso') backendStatus = 'in_progress';
-                            if (estadoDestino === 'completada') backendStatus = 'completed';
-                            
-                            // La URL oficial usa /tasks/ seguido del ID de la tarea
-                            await fetch(`/tasks/${tarjetaId}`, {
-                                method: 'PATCH',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({ 
-                                    status: backendStatus 
-                                })
-                            });
-                            
-                            console.log(`¡Petición enviada! Tarea ${tarjetaId} actualizada a: ${estadoDestino}`);
-                        } catch (error) {
-                            console.error('Error de red al conectar con el backend:', error);
-                        }
-                    }
-                });
-            });
-        });
-    </script>
 </x-app-layout>
