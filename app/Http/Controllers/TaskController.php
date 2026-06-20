@@ -23,6 +23,15 @@ class TaskController extends Controller
         return response()->json($tasks);
     }
 
+    public function create()
+    {
+        $subjects = Subject::where('user_id', Auth::id())
+            ->where('is_active', true)
+            ->get();
+            
+        return view('tasks.create', compact('subjects'));
+    }
+
     /**
      * Crea una nueva tarea (CRUD base + actualización incremental)
      */
@@ -53,15 +62,20 @@ class TaskController extends Controller
 
         $validated['user_id'] = Auth::id();
         $validated['is_completed'] = false;
+        $validated['status'] = 'pending';
         $validated['is_deleted'] = false;
         $validated['reminder'] = $request->boolean('reminder');
 
         $task = Task::create($validated);
 
-        return response()->json([
-            'message' => 'Tarea creada exitosamente',
-            'data' => $task
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Tarea creada exitosamente',
+                'data' => $task
+            ], 201);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Tarea creada exitosamente.');
     }
 
     /**
@@ -76,9 +90,14 @@ class TaskController extends Controller
 
         $validated = $request->validate([
             'is_completed' => 'sometimes|boolean',
-            // Agregamos task_type si el Kanban cambia de estado de tipo de tarea, 
-            // pero el contrato Kanban dice "Pendiente -> Completado", lo cual se maneja con is_completed.
+            'status' => 'sometimes|in:pending,in_progress,completed'
         ]);
+
+        if (isset($validated['status'])) {
+            $validated['is_completed'] = ($validated['status'] === 'completed');
+        } elseif (isset($validated['is_completed'])) {
+            $validated['status'] = $validated['is_completed'] ? 'completed' : 'pending';
+        }
 
         $task->update($validated);
 
