@@ -36,7 +36,7 @@ class SubjectController extends Controller
         $careers = $careersQuery->orderBy('name')->get();
 
         // Consultamos las asignaturas del usuario autenticado filtrando por el estado de vigencia y carrera si está presente
-        $subjectsQuery = Subject::where('user_id', Auth::id())
+        $subjectsQuery = Subject::with('tasks')->where('user_id', Auth::id())
                            ->where('is_active', $isActive);
 
         if ($activeUniId) {
@@ -84,8 +84,10 @@ class SubjectController extends Controller
             'name'       => 'required|string|max:150',   // Coincide con $table->string('name', 150)
             'teacher'    => 'nullable|string|max:150',    // Coincide con $table->string('teacher', 150)->nullable()
             'classroom'  => 'nullable|string|max:50',     // Coincide con $table->string('classroom', 50)->nullable()
-            'color_code' => 'required|string|max:7',      // Coincide con $table->string('color_code', 7)
-            'career_id'  => 'required|exists:careers,id', // Validamos que el career_id exista en la tabla careers
+            'color_code' => 'required|string|max:7',
+            'career_id'  => 'required|exists:careers,id',
+            'approval_type' => 'nullable|string|in:promocional,regular,libre',
+            'final_grade' => 'nullable|numeric|min:0|max:10',
         ], [
             'career_id.required' => 'Debes seleccionar una carrera a la cual pertenezca la asignatura.',
             'career_id.exists'   => 'La carrera seleccionada no es válida.',
@@ -139,6 +141,8 @@ class SubjectController extends Controller
             'color_code' => 'sometimes|required|string|max:7',
             'career_id'  => 'sometimes|required|exists:careers,id',
             'is_active'  => 'sometimes|boolean',
+            'approval_type' => 'nullable|string|in:promocional,regular,libre',
+            'final_grade' => 'nullable|numeric|min:0|max:10',
         ], [
             'career_id.required' => 'Debes seleccionar una carrera a la cual pertenezca la asignatura.',
             'career_id.exists'   => 'La carrera seleccionada no es válida.',
@@ -172,7 +176,11 @@ class SubjectController extends Controller
             abort(403, 'Acción no autorizada.');
         }
 
-        $tasks = $subject->tasks()->active()->byPriority()->get();
+        $tasks = $subject->tasks()
+            ->active()
+            ->whereNotIn('task_type', ['parcial', 'final'])
+            ->byPriority()
+            ->get();
 
         return view('subjects.show', compact('subject', 'tasks'));
     }

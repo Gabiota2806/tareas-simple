@@ -7,6 +7,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AcademicRecordController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
@@ -76,6 +77,9 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+
+    // API Dinámica - Libreta Universitaria
+    Route::get('/academic-record', [AcademicRecordController::class, 'index'])->name('academic-record.index');
 
     // API Dinámica - Calendario
     Route::get('/calendar/events', [CalendarController::class, 'events']);

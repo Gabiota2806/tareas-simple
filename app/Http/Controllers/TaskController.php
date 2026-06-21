@@ -37,8 +37,9 @@ class TaskController extends Controller
 
         $subjects = $subjectsQuery->get();
         $defaultSubjectId = $request->query('subject_id', '');
+        $allowedTypes = $request->query('allowed_types', 'all');
             
-        return view('tasks.create', compact('subjects', 'defaultSubjectId'));
+        return view('tasks.create', compact('subjects', 'defaultSubjectId', 'allowedTypes'));
     }
 
     /**

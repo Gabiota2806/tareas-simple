@@ -47,6 +47,30 @@
                                focus:border-violet-400 focus:ring-violet-400 transition">
                     </div>
 
+                    <!-- Datos Académicos (Aprobación y Nota) -->
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label for="approval_type" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                                Aprobación <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                            </label>
+                            <select id="approval_type" name="approval_type"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
+                                <option value="">Sin definir</option>
+                                <option value="promocional" {{ old('approval_type', $subject->approval_type) == 'promocional' ? 'selected' : '' }}>Promocional</option>
+                                <option value="regular" {{ old('approval_type', $subject->approval_type) == 'regular' ? 'selected' : '' }}>Regular (Con Final)</option>
+                                <option value="libre" {{ old('approval_type', $subject->approval_type) == 'libre' ? 'selected' : '' }}>Libre</option>
+                            </select>
+                        </div>
+
+                        <div class="flex-1">
+                            <label for="final_grade" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                                Nota Final <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                            </label>
+                            <input type="number" step="0.1" min="0" max="10" id="final_grade" name="final_grade" value="{{ old('final_grade', $subject->final_grade) }}" placeholder="Ej: 9.5"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
+                        </div>
+                    </div>
+
                     <!-- Carrera custom dropdown -->
                     <div>
                         <label for="career_id" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">Carrera</label>

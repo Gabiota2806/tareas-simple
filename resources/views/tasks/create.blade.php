@@ -16,7 +16,14 @@
                     Completá los datos principales para organizar tu actividad académica.
                 </p>
 
-                <form method="POST" action="{{ route('tasks.store') }}" class="mt-8" x-data="{ taskType: '{{ old('task_type', 'normal') }}', priority: '{{ old('priority', 'low') }}' }">
+                @php
+                    $defaultTaskType = old('task_type');
+                    if (!$defaultTaskType) {
+                        $defaultTaskType = (isset($allowedTypes) && $allowedTypes === 'exams') ? 'parcial' : 'normal';
+                    }
+                @endphp
+
+                <form method="POST" action="{{ route('tasks.store') }}" class="mt-8" x-data="{ taskType: '{{ $defaultTaskType }}', priority: '{{ old('priority', 'low') }}' }">
                     @csrf
                     <div class="grid gap-8 lg:grid-cols-2">
 
@@ -102,45 +109,49 @@
                                 </label>
 
                                 <div class="grid gap-3 sm:grid-cols-2">
-                                    <label
-                                        :class="taskType === 'normal'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="normal" x-model="taskType"
-                                            class="sr-only">
-                                        Tarea normal
-                                    </label>
+                                    @if(!isset($allowedTypes) || $allowedTypes === 'all' || $allowedTypes === 'tasks')
+                                        <label
+                                            :class="taskType === 'normal'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="normal" x-model="taskType"
+                                                class="sr-only">
+                                            Tarea normal
+                                        </label>
 
-                                    <label
-                                        :class="taskType === 'tp'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="tp" x-model="taskType"
-                                            class="sr-only">
-                                        Trabajo práctico
-                                    </label>
+                                        <label
+                                            :class="taskType === 'tp'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="tp" x-model="taskType"
+                                                class="sr-only">
+                                            Trabajo práctico
+                                        </label>
+                                    @endif
 
-                                    <label
-                                        :class="taskType === 'parcial'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="parcial" x-model="taskType"
-                                            class="sr-only">
-                                        Parcial
-                                    </label>
+                                    @if(!isset($allowedTypes) || $allowedTypes === 'all' || $allowedTypes === 'exams')
+                                        <label
+                                            :class="taskType === 'parcial'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="parcial" x-model="taskType"
+                                                class="sr-only">
+                                            Parcial
+                                        </label>
 
-                                    <label
-                                        :class="taskType === 'final'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="final" x-model="taskType"
-                                            class="sr-only">
-                                        Final
-                                    </label>
+                                        <label
+                                            :class="taskType === 'final'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="final" x-model="taskType"
+                                                class="sr-only">
+                                            Final
+                                        </label>
+                                    @endif
                                 </div>
                             </div>
                         </div>

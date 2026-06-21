@@ -16,6 +16,11 @@ class Subject extends Model
         'is_active',
         'career_id',
         'user_id',
+        'track_attendance',
+        'max_absences',
+        'absences_count',
+        'approval_type',
+        'final_grade',
     ];
 
     public function user(): BelongsTo
@@ -31,5 +36,10 @@ class Subject extends Model
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(SubjectSchedule::class);
     }
 }
