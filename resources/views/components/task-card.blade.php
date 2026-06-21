@@ -1,4 +1,4 @@
-@props(['id', 'status', 'title', 'subject', 'type', 'priority', 'description' => '', 'dueDate' => '', 'rawDueDate' => ''])
+@props(['id', 'status', 'title', 'subject', 'type', 'priority', 'description' => '', 'dueDate' => '', 'rawDueDate' => '', 'teamMembers' => '', 'submissionFormat' => '', 'grade' => '', 'enrollmentDate' => '', 'examType' => ''])
 
 @php
     $typeColors = [
@@ -24,6 +24,11 @@
     editType: '{{ $type }}',
     editPriority: '{{ $priority }}',
     editDueDate: '{{ $rawDueDate }}',
+    editTeamMembers: '{{ addslashes($teamMembers) }}',
+    editSubmissionFormat: '{{ addslashes($submissionFormat) }}',
+    editEnrollmentDate: '{{ $enrollmentDate }}',
+    editExamType: '{{ addslashes($examType) }}',
+    editGrade: '{{ $grade }}',
     
     async saveChanges() {
         try {
@@ -36,7 +41,12 @@
                     description: this.editDescription,
                     task_type: this.editType,
                     priority: this.editPriority,
-                    due_date: this.editDueDate || null
+                    due_date: this.editDueDate || null,
+                    team_members: this.editTeamMembers || null,
+                    submission_format: this.editSubmissionFormat || null,
+                    enrollment_date: this.editEnrollmentDate || null,
+                    exam_type: this.editExamType || null,
+                    grade: this.editGrade || null
                 })
             });
             location.reload();
@@ -176,6 +186,37 @@
                             {{ $description ?: 'Sin descripción disponible.' }}
                         </div>
                     </div>
+
+                    <!-- LECTURA DE CAMPOS ESPECÍFICOS -->
+                    <template x-if="editType === 'tp'">
+                        <div class="bg-violet-50 p-4 rounded-xl border border-violet-100 space-y-2 mt-4">
+                            <div x-show="editTeamMembers">
+                                <span class="font-bold text-violet-800 text-xs uppercase tracking-wide">Compañeros:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editTeamMembers"></span>
+                            </div>
+                            <div x-show="editSubmissionFormat">
+                                <span class="font-bold text-violet-800 text-xs uppercase tracking-wide">Entrega:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editSubmissionFormat"></span>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="editType === 'final' || editType === 'parcial'">
+                        <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 space-y-2 mt-4">
+                            <div x-show="editEnrollmentDate && editType === 'final'">
+                                <span class="font-bold text-orange-800 text-xs uppercase tracking-wide">Inscripción límite:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editEnrollmentDate"></span>
+                            </div>
+                            <div x-show="editExamType && editType === 'final'">
+                                <span class="font-bold text-orange-800 text-xs uppercase tracking-wide">Modalidad:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editExamType"></span>
+                            </div>
+                            <div x-show="editGrade">
+                                <span class="font-bold text-green-700 text-xs uppercase tracking-wide">Nota obtenida:</span>
+                                <span class="text-gray-700 text-sm ml-1 font-bold" x-text="editGrade"></span>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
 
@@ -234,8 +275,43 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Fecha límite</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1" x-text="(editType === 'parcial' || editType === 'final') ? 'Fecha del Examen' : 'Fecha límite'">Fecha límite</label>
                     <input type="date" x-model="editDueDate" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                </div>
+
+                <!-- EDICIÓN TP -->
+                <div x-show="editType === 'tp'" class="space-y-4 bg-violet-50 p-4 rounded-xl border border-violet-100 mt-4">
+                    <div>
+                        <label class="block text-sm font-bold text-violet-800 mb-1">Compañeros de Equipo</label>
+                        <input type="text" x-model="editTeamMembers" class="w-full rounded-xl border-violet-200 bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-violet-800 mb-1">Formato de Entrega</label>
+                        <input type="text" x-model="editSubmissionFormat" class="w-full rounded-xl border-violet-200 bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                    </div>
+                </div>
+
+                <!-- EDICIÓN FINAL/PARCIAL -->
+                <div x-show="editType === 'final'" class="space-y-4 bg-orange-50 p-4 rounded-xl border border-orange-100 mt-4">
+                    <div>
+                        <label class="block text-sm font-bold text-orange-800 mb-1">Inscripción a Mesa</label>
+                        <input type="date" x-model="editEnrollmentDate" class="w-full rounded-xl border-orange-200 bg-white focus:border-orange-400 focus:ring-orange-400 text-gray-800 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-orange-800 mb-1">Modalidad</label>
+                        <select x-model="editExamType" class="w-full rounded-xl border-orange-200 bg-white focus:border-orange-400 focus:ring-orange-400 text-gray-800 text-sm">
+                            <option value="">Seleccionar...</option>
+                            <option value="Escrito">Escrito</option>
+                            <option value="Oral">Oral</option>
+                            <option value="Mixto">Mixto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NOTA OBTENIDA -->
+                <div x-show="(editType === 'parcial' || editType === 'final') && currentStatus === 'completed'" class="mt-4">
+                    <label class="block text-sm font-bold text-green-700 mb-1">Nota Obtenida</label>
+                    <input type="number" step="0.1" max="10" min="0" x-model="editGrade" class="w-full rounded-xl border-green-200 bg-green-50 focus:bg-white focus:border-green-400 focus:ring-green-400 text-gray-800 text-sm" placeholder="Ej: 8.5">
                 </div>
 
                 <div>

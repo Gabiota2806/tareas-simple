@@ -17,7 +17,7 @@
                     </p>
                 </div>
 
-                <a href="{{ route('tasks.create') }}"
+                <a href="{{ route('tasks.create', ['subject_id' => $subject->id]) }}"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -48,6 +48,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach
@@ -73,6 +78,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach
@@ -98,6 +108,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach

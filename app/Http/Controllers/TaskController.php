@@ -23,13 +23,22 @@ class TaskController extends Controller
         return response()->json($tasks);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $subjects = Subject::where('user_id', Auth::id())
-            ->where('is_active', true)
-            ->get();
+        $activeUniId = session('active_university_id');
+        $subjectsQuery = Subject::where('user_id', Auth::id())
+            ->where('is_active', true);
+
+        if ($activeUniId) {
+            $subjectsQuery->whereHas('career', function($q) use ($activeUniId) {
+                $q->where('university_id', $activeUniId);
+            });
+        }
+
+        $subjects = $subjectsQuery->get();
+        $defaultSubjectId = $request->query('subject_id', '');
             
-        return view('tasks.create', compact('subjects'));
+        return view('tasks.create', compact('subjects', 'defaultSubjectId'));
     }
 
     /**
@@ -47,7 +56,12 @@ class TaskController extends Controller
             'estimated_time' => 'nullable|integer|min:1',
             'reminder' => 'boolean',
             'subject_id' => 'required|exists:subjects,id',
-            'parent_id' => 'nullable|exists:tasks,id'
+            'parent_id' => 'nullable|exists:tasks,id',
+            'team_members' => 'nullable|string|max:255',
+            'submission_format' => 'nullable|string|max:100',
+            'grade' => 'nullable|numeric|between:0,10',
+            'enrollment_date' => 'nullable|date',
+            'exam_type' => 'nullable|string|max:50'
         ]);
 
         // Restricción: La materia debe ser del usuario y estar ACTIVA
@@ -95,7 +109,12 @@ class TaskController extends Controller
             'priority' => 'sometimes|required|in:low,medium,high',
             'due_date' => 'nullable|date',
             'is_completed' => 'sometimes|boolean',
-            'status' => 'sometimes|in:pending,in_progress,completed'
+            'status' => 'sometimes|in:pending,in_progress,completed',
+            'team_members' => 'nullable|string|max:255',
+            'submission_format' => 'nullable|string|max:100',
+            'grade' => 'nullable|numeric|between:0,10',
+            'enrollment_date' => 'nullable|date',
+            'exam_type' => 'nullable|string|max:50'
         ]);
 
         if (isset($validated['status'])) {

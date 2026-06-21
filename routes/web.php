@@ -38,12 +38,12 @@ Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
     $tasks = $query->get();
         
     return view('dashboard', compact('tasks'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'ensure.university'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
 
 // 3. Rutas Protegidas del Sistema UniTask
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () {
 
     // Cambiar universidad activa
     Route::post('/active-university', function (\Illuminate\Http\Request $request) {
@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/universities/{university}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
     Route::patch('/universities/{university}', [UniversityController::class, 'update'])->name('universities.update');
     Route::delete('/universities/{university}', [UniversityController::class, 'destroy'])->name('universities.destroy');
+    Route::patch('/universities/{university}/favorite', [UniversityController::class, 'toggleFavorite'])->name('universities.favorite');
 
     Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
     Route::get('/careers/create', [CareerController::class, 'create'])->name('careers.create');
