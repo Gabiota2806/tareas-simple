@@ -1,4 +1,4 @@
-@props(['id', 'status', 'title', 'subject', 'type', 'priority', 'description' => '', 'dueDate' => '', 'rawDueDate' => ''])
+@props(['id', 'status', 'title', 'subject', 'type', 'priority', 'description' => '', 'dueDate' => '', 'rawDueDate' => '', 'teamMembers' => '', 'submissionFormat' => '', 'grade' => '', 'enrollmentDate' => '', 'examType' => ''])
 
 @php
     $typeColors = [
@@ -24,10 +24,21 @@
     editType: '{{ $type }}',
     editPriority: '{{ $priority }}',
     editDueDate: '{{ $rawDueDate }}',
+    editTeamMembers: '{{ addslashes($teamMembers) }}',
+    editSubmissionFormat: '{{ addslashes($submissionFormat) }}',
+    editEnrollmentDate: '{{ $enrollmentDate }}',
+    editExamType: '{{ addslashes($examType) }}',
+    editGrade: '{{ $grade }}',
     
     async saveChanges() {
         try {
             const token = document.querySelector('meta[name=csrf-token]').getAttribute('content');
+            
+            let finalStatus = this.currentStatus;
+            if (this.editGrade && this.editGrade !== '') {
+                finalStatus = 'completed';
+            }
+
             await fetch(`/tasks/{{ $id }}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
@@ -36,7 +47,13 @@
                     description: this.editDescription,
                     task_type: this.editType,
                     priority: this.editPriority,
-                    due_date: this.editDueDate || null
+                    due_date: this.editDueDate || null,
+                    team_members: this.editTeamMembers || null,
+                    submission_format: this.editSubmissionFormat || null,
+                    enrollment_date: this.editEnrollmentDate || null,
+                    exam_type: this.editExamType || null,
+                    grade: this.editGrade || null,
+                    status: finalStatus
                 })
             });
             location.reload();
@@ -45,31 +62,82 @@
 }">
 
     <div @click="open = true"
-        class="cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+        class="cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg relative overflow-hidden group">
 
-        <div class="flex items-center justify-between">
+        <!-- Marca de agua gigante con la nota -->
+        @if($grade && in_array($type, ['parcial', 'final']))
+            <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none select-none">
+                <span class="text-8xl font-black text-green-600 tracking-tighter">{{ $grade }}</span>
+            </div>
+        @endif
 
-            <span class="rounded-full px-3 py-1 text-xs font-semibold border {{ $typeColors[$type] }}">
-                {{ strtoupper($type) }}
-            </span>
+        <div class="flex items-center justify-between relative z-10">
 
-            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $priorityColors[$priority] }}">
-                {{ strtoupper($priority) }}
-            </span>
+            <div class="flex gap-2">
+                <span class="rounded-full px-3 py-1 text-xs font-semibold border {{ $typeColors[$type] }}">
+                    {{ strtoupper($type) }}
+                </span>
+
+                @php
+                    $statusStyles = [
+                        'pending' => 'bg-gray-100 text-gray-600 border-gray-200',
+                        'in_progress' => 'bg-blue-100 text-blue-700 border-blue-200',
+                        'completed' => 'bg-green-100 text-green-700 border-green-200'
+                    ];
+                    $statusLabels = [
+                        'pending' => in_array($type, ['parcial', 'final']) ? '⏳ Pendiente' : '📋 Pendiente',
+                        'in_progress' => in_array($type, ['parcial', 'final']) ? '📖 Estudiando' : '⚡ En proceso',
+                        'completed' => in_array($type, ['parcial', 'final']) ? '✅ Rendido' : '✅ Completada'
+                    ];
+                @endphp
+                <span class="rounded-full px-3 py-1 text-xs font-semibold border {{ $statusStyles[$status] }}">
+                    {{ $statusLabels[$status] }}
+                </span>
+            </div>
+
+            @if($grade && in_array($type, ['parcial', 'final']))
+                <span class="rounded-full bg-green-100 text-green-800 border border-green-200 px-3 py-1 text-xs font-bold flex items-center gap-1 shadow-sm">
+                    ⭐ Nota: {{ $grade }}
+                </span>
+            @else
+                <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $priorityColors[$priority] }}">
+                    {{ strtoupper($priority) }}
+                </span>
+            @endif
 
         </div>
 
-        <h3 class="mt-4 text-lg font-bold text-gray-800">
+        <h3 class="mt-4 text-lg font-bold text-gray-800 relative z-10">
             {{ $title }}
         </h3>
 
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-gray-500 relative z-10">
             {{ $subject }}
         </p>
 
-        <div class="mt-4 flex items-center justify-between text-sm text-gray-400">
-            <span>📅 {{ $dueDate }}</span>
-            <span>Ver detalles →</span>
+        @if(in_array($type, ['parcial', 'final']))
+            <div class="mt-4 flex flex-col gap-1.5 text-xs text-gray-500 relative z-10">
+                @if($examType)
+                    <p class="flex items-center gap-1.5"><span class="text-sm">🎓</span> <span class="font-semibold text-gray-700">Modalidad:</span> {{ $examType }}</p>
+                @endif
+                @if($enrollmentDate && $type === 'final')
+                    <p class="flex items-center gap-1.5"><span class="text-sm">📝</span> <span class="font-semibold text-orange-600">Inscripción límite:</span> {{ date('d M, Y', strtotime($enrollmentDate)) }}</p>
+                @endif
+                @if($status === 'completed' && !$grade)
+                    <p class="flex items-center gap-1.5"><span class="text-sm">⏳</span> <span class="font-semibold text-blue-600">Esperando calificación...</span></p>
+                @endif
+            </div>
+        @endif
+
+        <div class="mt-5 flex items-center justify-between text-sm text-gray-400 relative z-10 border-t border-gray-100 pt-4">
+            <span class="font-medium flex items-center gap-1.5 {{ $status !== 'completed' && $rawDueDate && \Carbon\Carbon::parse($rawDueDate)->isPast() ? 'text-red-500 font-bold' : '' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                {{ $dueDate }}
+            </span>
+            <button type="button" class="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-violet-700 bg-violet-50 group-hover:bg-violet-100 group-hover:text-violet-800 px-3 py-1.5 rounded-lg transition-all shadow-sm">
+                Ver detalles
+                <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </button>
         </div>
     </div>
 
@@ -95,9 +163,9 @@
                     <div x-show="!isEditing" x-data="{ 
                         dropdownOpen: false,
                         statuses: {
-                            'pending': '📋 Pendiente',
-                            'in_progress': '⚡ En progreso',
-                            'completed': '✅ Completada'
+                            'pending': '{{ in_array($type, ["parcial", "final"]) ? "⏳ Pendiente" : "📋 Pendiente" }}',
+                            'in_progress': '{{ in_array($type, ["parcial", "final"]) ? "📖 Estudiando" : "⚡ En progreso" }}',
+                            'completed': '{{ in_array($type, ["parcial", "final"]) ? "✅ Rendido" : "✅ Completada" }}'
                         },
                         changeStatus(status) {
                             this.currentStatus = status;
@@ -176,6 +244,37 @@
                             {{ $description ?: 'Sin descripción disponible.' }}
                         </div>
                     </div>
+
+                    <!-- LECTURA DE CAMPOS ESPECÍFICOS -->
+                    <template x-if="editType === 'tp'">
+                        <div class="bg-violet-50 p-4 rounded-xl border border-violet-100 space-y-2 mt-4">
+                            <div x-show="editTeamMembers">
+                                <span class="font-bold text-violet-800 text-xs uppercase tracking-wide">Compañeros:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editTeamMembers"></span>
+                            </div>
+                            <div x-show="editSubmissionFormat">
+                                <span class="font-bold text-violet-800 text-xs uppercase tracking-wide">Entrega:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editSubmissionFormat"></span>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-if="editType === 'final' || editType === 'parcial'">
+                        <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 space-y-2 mt-4">
+                            <div x-show="editEnrollmentDate && editType === 'final'">
+                                <span class="font-bold text-orange-800 text-xs uppercase tracking-wide">Inscripción límite:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editEnrollmentDate"></span>
+                            </div>
+                            <div x-show="editExamType && editType === 'final'">
+                                <span class="font-bold text-orange-800 text-xs uppercase tracking-wide">Modalidad:</span>
+                                <span class="text-gray-700 text-sm ml-1" x-text="editExamType"></span>
+                            </div>
+                            <div x-show="editGrade">
+                                <span class="font-bold text-green-700 text-xs uppercase tracking-wide">Nota obtenida:</span>
+                                <span class="text-gray-700 text-sm ml-1 font-bold" x-text="editGrade"></span>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
 
@@ -234,8 +333,44 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Fecha límite</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1" x-text="(editType === 'parcial' || editType === 'final') ? 'Fecha del Examen' : 'Fecha límite'">Fecha límite</label>
                     <input type="date" x-model="editDueDate" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                </div>
+
+                <!-- EDICIÓN TP -->
+                <div x-show="editType === 'tp'" class="space-y-4 bg-violet-50 p-4 rounded-xl border border-violet-100 mt-4">
+                    <div>
+                        <label class="block text-sm font-bold text-violet-800 mb-1">Compañeros de Equipo</label>
+                        <input type="text" x-model="editTeamMembers" class="w-full rounded-xl border-violet-200 bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-violet-800 mb-1">Formato de Entrega</label>
+                        <input type="text" x-model="editSubmissionFormat" class="w-full rounded-xl border-violet-200 bg-white focus:border-violet-400 focus:ring-violet-400 text-gray-800 text-sm">
+                    </div>
+                </div>
+
+                <!-- EDICIÓN FINAL/PARCIAL -->
+                <div x-show="editType === 'final'" class="space-y-4 bg-orange-50 p-4 rounded-xl border border-orange-100 mt-4">
+                    <div>
+                        <label class="block text-sm font-bold text-orange-800 mb-1">Inscripción a Mesa</label>
+                        <input type="date" x-model="editEnrollmentDate" class="w-full rounded-xl border-orange-200 bg-white focus:border-orange-400 focus:ring-orange-400 text-gray-800 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-orange-800 mb-1">Modalidad</label>
+                        <select x-model="editExamType" class="w-full rounded-xl border-orange-200 bg-white focus:border-orange-400 focus:ring-orange-400 text-gray-800 text-sm">
+                            <option value="">Seleccionar...</option>
+                            <option value="Escrito">Escrito</option>
+                            <option value="Oral">Oral</option>
+                            <option value="Mixto">Mixto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NOTA OBTENIDA -->
+                <div x-show="(editType === 'parcial' || editType === 'final')" class="mt-4">
+                    <label class="block text-sm font-bold text-green-700 mb-1">Nota Obtenida</label>
+                    <input type="number" step="0.1" max="10" min="0" x-model="editGrade" class="w-full rounded-xl border-green-200 bg-green-50 focus:bg-white focus:border-green-400 focus:ring-green-400 text-gray-800 text-sm" placeholder="Ej: 8.5">
+                    <p class="text-xs text-green-600 mt-1" x-show="currentStatus !== 'completed'">Al guardar una nota, se marcará automáticamente como Rendido.</p>
                 </div>
 
                 <div>

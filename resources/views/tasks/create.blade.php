@@ -16,7 +16,14 @@
                     Completá los datos principales para organizar tu actividad académica.
                 </p>
 
-                <form method="POST" action="{{ route('tasks.store') }}" class="mt-8" x-data="{ taskType: '{{ old('task_type', 'normal') }}', priority: '{{ old('priority', 'low') }}' }">
+                @php
+                    $defaultTaskType = old('task_type');
+                    if (!$defaultTaskType) {
+                        $defaultTaskType = (isset($allowedTypes) && $allowedTypes === 'exams') ? 'parcial' : 'normal';
+                    }
+                @endphp
+
+                <form method="POST" action="{{ route('tasks.store') }}" class="mt-8" x-data="{ taskType: '{{ $defaultTaskType }}', priority: '{{ old('priority', 'low') }}' }">
                     @csrf
                     <div class="grid gap-8 lg:grid-cols-2">
 
@@ -48,10 +55,10 @@
                                     Materia activa <span class="text-red-500">*</span>
                                 </label>
 
-                                <div x-data="{ open: false, selected: '{{ old('subject_id') }}', get selectedName() {
-                                    const subjects = @json($subjects->mapWithKeys(fn($s) => [$s->id => $s->name]));
-                                    return subjects[this.selected] || 'Seleccionar materia';
-                                } }" class="relative w-full">
+                                <div x-data='{ open: false, selected: "{{ old('subject_id', $defaultSubjectId) }}", get selectedName() {
+                                    const subjects = @json($subjects->mapWithKeys(fn($s) => [$s->id => $s->name])->toArray(), JSON_FORCE_OBJECT);
+                                    return subjects[this.selected] || "Seleccionar materia";
+                                } }' class="relative w-full">
                                     <input type="hidden" name="subject_id" x-model="selected" required>
                                     
                                     <button type="button" @click="open = !open"
@@ -102,45 +109,49 @@
                                 </label>
 
                                 <div class="grid gap-3 sm:grid-cols-2">
-                                    <label
-                                        :class="taskType === 'normal'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="normal" x-model="taskType"
-                                            class="sr-only">
-                                        Tarea normal
-                                    </label>
+                                    @if(!isset($allowedTypes) || $allowedTypes === 'all' || $allowedTypes === 'tasks')
+                                        <label
+                                            :class="taskType === 'normal'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="normal" x-model="taskType"
+                                                class="sr-only">
+                                            Tarea normal
+                                        </label>
 
-                                    <label
-                                        :class="taskType === 'tp'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="tp" x-model="taskType"
-                                            class="sr-only">
-                                        Trabajo práctico
-                                    </label>
+                                        <label
+                                            :class="taskType === 'tp'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="tp" x-model="taskType"
+                                                class="sr-only">
+                                            Trabajo práctico
+                                        </label>
+                                    @endif
 
-                                    <label
-                                        :class="taskType === 'parcial'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="parcial" x-model="taskType"
-                                            class="sr-only">
-                                        Parcial
-                                    </label>
+                                    @if(!isset($allowedTypes) || $allowedTypes === 'all' || $allowedTypes === 'exams')
+                                        <label
+                                            :class="taskType === 'parcial'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="parcial" x-model="taskType"
+                                                class="sr-only">
+                                            Parcial
+                                        </label>
 
-                                    <label
-                                        :class="taskType === 'final'
-                                            ? 'border-violet-300 bg-violet-50 text-violet-700'
-                                            : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
-                                        class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
-                                        <input type="radio" name="task_type" value="final" x-model="taskType"
-                                            class="sr-only">
-                                        Final
-                                    </label>
+                                        <label
+                                            :class="taskType === 'final'
+                                                ? 'border-violet-300 bg-violet-50 text-violet-700'
+                                                : 'border-gray-200 text-gray-600 hover:border-violet-300 hover:bg-violet-50'"
+                                            class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition">
+                                            <input type="radio" name="task_type" value="final" x-model="taskType"
+                                                class="sr-only">
+                                            Final
+                                        </label>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -185,7 +196,7 @@
                             </div>
 
                             <div>
-                                <label for="due_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="due_date" class="block text-sm font-medium text-gray-700 mb-2" x-text="(taskType === 'parcial' || taskType === 'final') ? 'Fecha del Examen' : 'Fecha límite de entrega'">
                                     Fecha de vencimiento
                                 </label>
 
@@ -195,13 +206,45 @@
                             </div>
 
                             <div>
-                                <label for="task_time" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="task_time" class="block text-sm font-medium text-gray-700 mb-2" x-text="(taskType === 'parcial' || taskType === 'final') ? 'Hora del Examen' : 'Hora límite (opcional)'">
                                     Hora opcional
                                 </label>
 
                                 <input id="task_time" type="time" name="task_time" value="{{ old('task_time') }}"
                                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violeta-moderno focus:ring-violeta-moderno">
                                 @error('task_time') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- CAMPOS ESPECÍFICOS DE TRABAJO PRÁCTICO -->
+                            <div x-show="taskType === 'tp'" style="display: none;" x-transition class="space-y-6 p-5 bg-violet-50 rounded-xl border border-violet-100">
+                                <div>
+                                    <label for="team_members" class="block text-sm font-medium text-violet-800 mb-2">Compañeros de Equipo</label>
+                                    <input id="team_members" type="text" name="team_members" value="{{ old('team_members') }}" placeholder="Ej: Marcos, Sofía..."
+                                        class="w-full rounded-xl border border-violet-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violet-400 focus:ring-violet-400">
+                                </div>
+                                <div>
+                                    <label for="submission_format" class="block text-sm font-medium text-violet-800 mb-2">Formato de Entrega</label>
+                                    <input id="submission_format" type="text" name="submission_format" value="{{ old('submission_format') }}" placeholder="Ej: PDF en Campus, Carpeta impresa"
+                                        class="w-full rounded-xl border border-violet-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-violet-400 focus:ring-violet-400">
+                                </div>
+                            </div>
+
+                            <!-- CAMPOS ESPECÍFICOS DE FINAL -->
+                            <div x-show="taskType === 'final'" style="display: none;" x-transition class="space-y-6 p-5 bg-orange-50 rounded-xl border border-orange-100">
+                                <div>
+                                    <label for="enrollment_date" class="block text-sm font-medium text-orange-800 mb-2">Fecha Límite de Inscripción a Mesa</label>
+                                    <input id="enrollment_date" type="date" name="enrollment_date" value="{{ old('enrollment_date') }}"
+                                        class="w-full rounded-xl border border-orange-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-orange-400 focus:ring-orange-400">
+                                </div>
+                                <div>
+                                    <label for="exam_type" class="block text-sm font-medium text-orange-800 mb-2">Modalidad del Examen</label>
+                                    <select id="exam_type" name="exam_type" class="w-full rounded-xl border border-orange-200 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-orange-400 focus:ring-orange-400">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Escrito">Escrito</option>
+                                        <option value="Oral">Oral</option>
+                                        <option value="Mixto">Mixto (Escrito y Oral)</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div>

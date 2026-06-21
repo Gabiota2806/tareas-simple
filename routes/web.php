@@ -7,6 +7,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AcademicRecordController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
@@ -38,12 +39,12 @@ Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
     $tasks = $query->get();
         
     return view('dashboard', compact('tasks'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'ensure.university'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
 
 // 3. Rutas Protegidas del Sistema UniTask
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () {
 
     // Cambiar universidad activa
     Route::post('/active-university', function (\Illuminate\Http\Request $request) {
@@ -77,6 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 
+    // API Dinámica - Libreta Universitaria
+    Route::get('/academic-record', [AcademicRecordController::class, 'index'])->name('academic-record.index');
+
     // API Dinámica - Calendario
     Route::get('/calendar/events', [CalendarController::class, 'events']);
 
@@ -87,6 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/universities/{university}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
     Route::patch('/universities/{university}', [UniversityController::class, 'update'])->name('universities.update');
     Route::delete('/universities/{university}', [UniversityController::class, 'destroy'])->name('universities.destroy');
+    Route::patch('/universities/{university}/favorite', [UniversityController::class, 'toggleFavorite'])->name('universities.favorite');
 
     Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
     Route::get('/careers/create', [CareerController::class, 'create'])->name('careers.create');

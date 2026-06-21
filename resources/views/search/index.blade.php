@@ -48,6 +48,19 @@
                                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                                     </span>
                                 </div>
+                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                    @if(in_array($task->task_type, ['parcial', 'final']))
+                                        <a href="{{ route('academic-record.index', ['career_id' => $task->subject->career_id ?? '']) }}" class="w-full inline-flex items-center justify-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 px-4 py-2.5 rounded-xl transition-all shadow-sm group">
+                                            Ir a la Libreta
+                                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('subjects.show', $task->subject_id) }}" class="w-full inline-flex items-center justify-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 px-4 py-2.5 rounded-xl transition-all shadow-sm group">
+                                            Ver en Kanban
+                                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -67,9 +80,12 @@
                                         {{ $subject->teacher ?: 'Sin profesor' }}
                                     </p>
                                 </div>
-                                <a href="{{ route('subjects.show', $subject->id) }}" class="mt-4 inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
-                                    Ir a la materia →
-                                </a>
+                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                    <a href="{{ route('subjects.show', $subject->id) }}" class="w-full inline-flex items-center justify-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 px-4 py-2.5 rounded-xl transition-all shadow-sm group">
+                                        Tablero Kanban
+                                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                    </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>

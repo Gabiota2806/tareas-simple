@@ -25,13 +25,19 @@ class Task extends Model
         'subject_id',
         'user_id',
         'parent_id',
-        'is_deleted'
+        'is_deleted',
+        'team_members',
+        'submission_format',
+        'grade',
+        'enrollment_date',
+        'exam_type'
     ];
 
     protected $casts = [
-        'is_completed' => 'boolean',
-        'is_deleted'   => 'boolean',
-        'due_date'     => 'date',
+        'is_completed'    => 'boolean',
+        'is_deleted'      => 'boolean',
+        'due_date'        => 'date',
+        'enrollment_date' => 'date',
     ];
 
     /**

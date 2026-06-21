@@ -5,8 +5,9 @@
             <!-- Header de la materia -->
             <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <a href="{{ route('dashboard') }}" class="text-sm text-gray-500 hover:text-violeta-moderno flex items-center gap-1 mb-2">
-                        ← Volver al inicio
+                    <a href="{{ route('dashboard') }}" class="w-fit inline-flex items-center justify-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 px-4 py-2 rounded-xl transition-all shadow-sm group mb-4">
+                        <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        Volver al inicio
                     </a>
                     <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <span class="w-4 h-4 rounded-full" style="background-color: {{ $subject->color_code }}"></span>
@@ -17,7 +18,7 @@
                     </p>
                 </div>
 
-                <a href="{{ route('tasks.create') }}"
+                <a href="{{ route('tasks.create', ['subject_id' => $subject->id, 'allowed_types' => 'tasks']) }}"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -48,6 +49,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach
@@ -73,6 +79,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach
@@ -98,6 +109,11 @@
                                     description="{{ $task->description }}"
                                     dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
                                     rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                    teamMembers="{{ $task->team_members }}"
+                                    submissionFormat="{{ $task->submission_format }}"
+                                    grade="{{ $task->grade }}"
+                                    enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                    examType="{{ $task->exam_type }}"
                                 />
                             </div>
                         @endforeach

@@ -56,6 +56,8 @@
                             <h1 class="text-lg font-semibold text-gray-800">
                                 @if (request()->routeIs('dashboard'))
                                     Inicio
+                                @elseif(request()->routeIs('subjects.show'))
+                                    Tareas
                                 @elseif(request()->is('subjects*'))
                                     Materias
                                 @elseif(request()->is('universities*'))
@@ -64,6 +66,8 @@
                                     Carreras
                                 @elseif(request()->is('calendar*'))
                                     Calendario
+                                @elseif(request()->routeIs('academic-record.*'))
+                                    Libreta Universitaria
                                 @elseif(request()->routeIs('tasks.create'))
                                     Nueva tarea
                                 @else
@@ -74,8 +78,8 @@
                     </div>
 
                     <!-- Buscador y filtros académicos -->
-                    <div class="hidden md:grid flex-1 max-w-4xl grid-cols-[1fr_140px_160px] items-center gap-3">
-                        <form action="{{ route('search.index') }}" method="GET" class="relative flex-1">
+                    <div class="hidden md:block flex-1 max-w-xl mx-4">
+                        <form action="{{ route('search.index') }}" method="GET" class="relative">
                             <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 hover:text-violeta-moderno">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
@@ -86,7 +90,12 @@
                             <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar tareas o materias..."
                                 class="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:bg-white focus:ring-1 focus:ring-violeta-moderno">
                         </form>
+                    </div>
 
+                    <!-- Right Controls (Universidad + Usuario) -->
+                    <div class="hidden md:flex items-center gap-3">
+                        
+                        <!-- Universidad -->
                         <div class="relative w-[180px]">
                             <span
                                 class="absolute -top-2 left-4 bg-white px-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
@@ -94,7 +103,7 @@
                             </span>
 
                             <button @click="universityOpen = !universityOpen"
-                                class="flex w-full items-center justify-between gap-2 rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300">
+                                class="flex w-full items-center justify-between gap-2 rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno">
 
                                 <span class="truncate flex-1 text-left">{{ $activeUniName }}</span>
 
@@ -106,7 +115,7 @@
                             </button>
 
                             <div x-show="universityOpen" @click.away="universityOpen = false" x-transition
-                                class="absolute z-50 mt-2 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl right-0 md:left-0 md:right-auto"
+                                class="absolute z-50 mt-2 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl right-0"
                                 style="display:none;">
 
                                 <form method="POST" action="{{ route('active-university.set') }}">
@@ -131,7 +140,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     <!-- Usuario -->
                     <div class="relative">
@@ -176,6 +184,7 @@
                             </form>
                         </div>
                     </div>
+                    <!-- End of Right Controls -->
                 </div>
 
                 <!-- Buscador y filtros móvil -->

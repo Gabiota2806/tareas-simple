@@ -97,13 +97,16 @@
                                     {{ $subject->name }}
                                 </h4>
                                 <p class="mt-1 text-sm text-gray-500">
-                                    {{ $subject->tasks()->active()->where('status', '!=', 'completed')->count() }} tareas pendientes
+                                    {{ $subject->tasks()->active()->where('status', '!=', 'completed')->whereIn('task_type', ['normal', 'tp'])->count() }} tareas pendientes
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ route('subjects.show', $subject->id) }}" class="inline-flex items-center text-sm font-semibold text-violeta-moderno hover:underline">
-                            Ver tablero Kanban →
-                        </a>
+                        <div class="mt-2 pt-4 border-t border-gray-100">
+                            <a href="{{ route('subjects.show', $subject->id) }}" class="w-full inline-flex items-center justify-center gap-2 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 px-4 py-2.5 rounded-xl transition-all shadow-sm group">
+                                Tablero Kanban
+                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        </div>
                     </div>
                 @empty
                     <div class="col-span-full p-8 text-center bg-white rounded-2xl shadow-sm border border-gray-100">

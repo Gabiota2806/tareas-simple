@@ -20,6 +20,7 @@ class University extends Model
         'name',
         'acronym',
         'user_id',
+        'is_favorite',
     ];
 
     /**
