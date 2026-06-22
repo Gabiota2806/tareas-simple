@@ -71,7 +71,10 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
-
+    
+    // Vista Calendario
+    Route::view('/calendar', 'calendar.index')->name('calendar.index');
+    
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
