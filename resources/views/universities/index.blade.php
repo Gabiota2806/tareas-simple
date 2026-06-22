@@ -17,6 +17,12 @@
                 </div>
             @endif
 
+            @if(session('warning'))
+                <div class="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm font-bold text-center">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse($universities as $university)
                     <div class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-violet-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
