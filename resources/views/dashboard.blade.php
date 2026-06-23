@@ -150,22 +150,19 @@
                         // Aquí se enviará la petición PATCH en la siguiente actividad
                                                 // Conectamos directamente al endpoint PATCH oficial de UniTask
                         try {
-                            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                             
                             // El backend espera un booleano 'is_completed'
                             const isCompleted = (estadoDestino === 'completada');
                             
                             // La URL oficial usa /tasks/ seguido del ID de la tarea
-                            await fetch(`/tasks/${tarjetaId}`, {
+                            await window.apiFetch(`/tasks/${tarjetaId}`, {
                                 method: 'PATCH',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json'
                                 },
-                                body: JSON.stringify({ 
-                                    is_completed: isCompleted 
-                                })
+                                body: JSON.stringify({
+                                    is_completed: isCompleted,
+                                }),
                             });
                             
                             console.log(`¡Petición enviada! Tarea ${tarjetaId} actualizada a: ${estadoDestino}`);
