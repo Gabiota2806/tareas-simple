@@ -158,6 +158,12 @@
                                     status: backendStatus 
                                 })
                             });
+
+                            // Notificar al componente Alpine interno para que actualice la píldora visual
+                            const cardElement = document.querySelector(`[data-id="${tarjetaId}"] > div`);
+                            if (cardElement) {
+                                cardElement.dispatchEvent(new CustomEvent('status-updated', { detail: { newStatus: backendStatus } }));
+                            }
                             
                             // Actualizar contadores dinámicamente contando las tarjetas (hijos) en cada columna
                             document.getElementById('count-pendiente').innerText = document.getElementById('col-pendiente').children.length;
