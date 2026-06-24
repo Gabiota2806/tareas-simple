@@ -17,6 +17,12 @@
                 </div>
             @endif
 
+            @if(session('warning'))
+                <div class="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm font-bold text-center">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse($universities as $university)
                     <div class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-violet-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -41,6 +47,19 @@
                                 Creada: {{ $university->created_at->format('d/m/Y') }}
                             </span>
                             <div class="flex items-center gap-2">
+                                @if($university->is_favorite)
+                                    <div class="p-1.5 text-yellow-500 bg-yellow-50 rounded-lg cursor-default shadow-sm border border-yellow-200" title="Universidad Principal (No se puede desmarcar)">
+                                        <svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                    </div>
+                                @else
+                                    <form method="POST" action="{{ route('universities.favorite', $university) }}" class="inline-block">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="p-1.5 rounded-lg transition-all text-gray-300 hover:text-yellow-500 hover:bg-yellow-50" title="Marcar como favorita">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                                        </button>
+                                    </form>
+                                @endif
                                 <a href="{{ route('universities.edit', $university) }}" class="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all" title="Editar">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                 </a>

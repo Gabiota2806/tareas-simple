@@ -6,6 +6,8 @@ use App\Http\Controllers\CareerController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AcademicRecordController;
 use Illuminate\Support\Facades\Route;
 
 // 1. Rutas Públicas
@@ -14,20 +16,45 @@ Route::get('/', function () {
 });
 
 // 2. Rutas Protegidas de Breeze (Autenticación nativa)
-Route::get('/dashboard', function () {
-    $tasks = \App\Models\Task::where('user_id', \Illuminate\Support\Facades\Auth::id())
+Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
+    $activeUniId = session('active_university_id');
+    
+    $query = \App\Models\Task::where('user_id', \Illuminate\Support\Facades\Auth::id())
         ->active()
         ->with('subject')
-        ->byPriority()
-        ->get();
+        ->byPriority();
+
+    if ($activeUniId) {
+        $query->whereHas('subject.career', function($q) use ($activeUniId) {
+            $q->where('university_id', $activeUniId);
+        });
+    }
+
+    if ($request->filled('career_id')) {
+        $query->whereHas('subject', function($q) use ($request) {
+            $q->where('career_id', $request->career_id);
+        });
+    }
+
+    $tasks = $query->get();
         
     return view('dashboard', compact('tasks'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'ensure.university'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
 
 // 3. Rutas Protegidas del Sistema UniTask
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () {
+
+    // Cambiar universidad activa
+    Route::post('/active-university', function (\Illuminate\Http\Request $request) {
+        $request->validate(['university_id' => 'required|exists:universities,id']);
+        session(['active_university_id' => $request->university_id]);
+        return back();
+    })->name('active-university.set');
+
+    // Buscador global
+    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 
     // Perfil de Usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,19 +65,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects.index');
     Route::get('/subjects/create', [SubjectController::class, 'create'])->name('subjects.create');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
+    Route::get('/subjects/{subject}', [SubjectController::class, 'show'])->name('subjects.show');
     Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
-    Route::get('/tasks/create', function () {
-        return view('tasks.create');
-    })->name('tasks.create');
-
+    Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+    
+    // Vista Calendario
+    Route::view('/calendar', 'calendar.index')->name('calendar.index');
+    
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);
-    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
     Route::patch('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
+
+    // API Dinámica - Libreta Universitaria
+    Route::get('/academic-record', [AcademicRecordController::class, 'index'])->name('academic-record.index');
 
     // API Dinámica - Calendario
     Route::get('/calendar/events', [CalendarController::class, 'events']);
@@ -62,6 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/universities/{university}/edit', [UniversityController::class, 'edit'])->name('universities.edit');
     Route::patch('/universities/{university}', [UniversityController::class, 'update'])->name('universities.update');
     Route::delete('/universities/{university}', [UniversityController::class, 'destroy'])->name('universities.destroy');
+    Route::patch('/universities/{university}/favorite', [UniversityController::class, 'toggleFavorite'])->name('universities.favorite');
 
     Route::get('/careers', [CareerController::class, 'index'])->name('careers.index');
     Route::get('/careers/create', [CareerController::class, 'create'])->name('careers.create');

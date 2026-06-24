@@ -47,53 +47,165 @@
                                focus:border-violet-400 focus:ring-violet-400 transition">
                     </div>
 
-                    <!-- Carrera custom dropdown -->
-                    <div x-data="{ open: false, selected: '{{ $subject->career->name ?? 'Seleccione una carrera' }}', selectedId: '{{ $subject->career_id }}' }" class="relative">
-                        <label class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
-                            Carrera
-                        </label>
-                        <!-- Botón principal -->
-                        <button type="button" @click="open = !open"
-                                class="w-full flex justify-between items-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm font-nunito
-                                       focus:border-violet-400 focus:ring-violet-400 transition">
-                            <span x-text="selected"></span>
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-
-                        <!-- Opciones -->
-                        <div x-show="open" @click.away="open = false"
-                             class="absolute mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg z-20 max-h-48 overflow-y-auto">
-                            <ul class="rounded-lg overflow-hidden">
-                                @foreach($careers as $career)
-                                <li @click="selected = '{{ $career->name }}'; selectedId = '{{ $career->id }}'; open = false"
-                                    class="px-3 py-2 hover:bg-violet-100 cursor-pointer text-sm font-nunito">
-                                    {{ $career->name }}
-                                </li>
-                                @endforeach
-                            </ul>
+                    <!-- Datos Académicos (Aprobación y Nota) -->
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label for="approval_type" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                                Aprobación <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                            </label>
+                            <select id="approval_type" name="approval_type"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
+                                <option value="">Sin definir</option>
+                                <option value="promocional" {{ old('approval_type', $subject->approval_type) == 'promocional' ? 'selected' : '' }}>Promocional</option>
+                                <option value="regular" {{ old('approval_type', $subject->approval_type) == 'regular' ? 'selected' : '' }}>Regular (Con Final)</option>
+                                <option value="libre" {{ old('approval_type', $subject->approval_type) == 'libre' ? 'selected' : '' }}>Libre</option>
+                            </select>
                         </div>
 
-                        <!-- Input oculto para enviar el valor -->
-                        <input type="hidden" name="career_id" :value="selectedId" required>
+                        <div class="flex-1">
+                            <label for="final_grade" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                                Nota Final <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
+                            </label>
+                            <input type="number" step="0.1" min="0" max="10" id="final_grade" name="final_grade" value="{{ old('final_grade', $subject->final_grade) }}" placeholder="Ej: 9.5"
+                                   class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
+                        </div>
                     </div>
 
-                    <!-- Color identificador -->
+                    <!-- Carrera custom dropdown -->
                     <div>
-                        <div class="flex items-center gap-2">
-                            <label for="color_identificador" class="text-sm font-bold text-gray-700 font-nunito">
-                                Color
-                            </label>
-                            <div class="relative w-6 h-6">
-                                <input type="color" id="color_identificador" name="color_code" value="{{ old('color_code', $subject->color_code ?? '#8B5CF6') }}" required
-                                       class="absolute top-0 left-0 w-6 h-6 opacity-0 cursor-pointer z-10"
-                                       onchange="document.getElementById('color_preview').style.backgroundColor=this.value">
-                                <div id="color_preview"
-                                     class="w-6 h-6 rounded-md border shadow-sm absolute top-0 left-0 z-0"
-                                     style="background-color: {{ old('color_code', $subject->color_code ?? '#8B5CF6') }}"></div>
+                        <label for="career_id" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">Carrera</label>
+                        <div x-data='{ open: false, selected: "{{ old('career_id', $subject->career_id) }}", careers: @json($careers->mapWithKeys(fn($c) => [$c->id => $c->name])), get selectedName() {
+                            return this.careers[this.selected] || "Seleccione una carrera";
+                        } }' class="relative w-full">
+                            <input type="hidden" name="career_id" x-model="selected" required>
+                            
+                            <button type="button" @click="open = !open"
+                                class="flex w-full items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                
+                                <span x-text="selectedName" class="truncate flex-1 text-left" :class="selected === '' ? 'text-gray-400' : 'text-gray-700'"></span>
+
+                                <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="open" @click.away="open = false" x-transition
+                                class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-lg border border-gray-100 bg-white p-2 shadow-xl"
+                                style="display:none;">
+                                
+                                <button type="button" @click="selected = ''; open = false" 
+                                    class="w-full truncate rounded-md px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                    :class="selected === '' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                    Seleccione una carrera
+                                </button>
+
+                                @foreach($careers as $career)
+                                    <button type="button" @click="selected = '{{ $career->id }}'; open = false" 
+                                        class="w-full truncate rounded-md px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                        :class="selected === '{{ $career->id }}' ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'">
+                                        {{ $career->name }}
+                                    </button>
+                                @endforeach
                             </div>
                         </div>
+                        <x-input-error :messages="$errors->get('career_id')" class="mt-2" />
+                    </div>
+
+                    <!-- Color Identificador en Dropdown -->
+                    <div x-data="{ 
+                        openColor: false,
+                        selectedColor: '{{ old('color_code', $subject->color_code ?? '#8B5CF6') }}',
+                        customColors: ['#E5E7EB', '#E5E7EB', '#E5E7EB', '#E5E7EB'],
+                        tempColor: '#000000',
+                        palette: [
+                            '#8B5CF6', '#EC4899', '#EF4444', '#F97316', 
+                            '#F59E0B', '#10B981', '#06B6D4', '#3B82F6', 
+                            '#4F46E5', '#D946EF', '#84CC16', '#F43F5E'
+                        ],
+                        init() {
+                            let stored = JSON.parse(localStorage.getItem('unitask_custom_colors'));
+                            if (stored && Array.isArray(stored)) {
+                                stored.slice(0, 4).forEach((c, i) => this.customColors[i] = c);
+                            }
+                        },
+                        saveCustomColor() {
+                            let index = this.customColors.indexOf('#E5E7EB');
+                            if (index !== -1) {
+                                this.customColors[index] = this.tempColor;
+                            } else {
+                                this.customColors.unshift(this.tempColor);
+                                this.customColors.pop();
+                            }
+                            this.selectedColor = this.tempColor;
+                            localStorage.setItem('unitask_custom_colors', JSON.stringify(this.customColors));
+                        }
+                    }">
+                        <label class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
+                            Color Identificador
+                        </label>
+                        
+                        <input type="hidden" name="color_code" :value="selectedColor">
+                        
+                        <div class="relative w-fit min-w-[14rem]">
+                            <!-- Botón del Dropdown -->
+                            <button type="button" @click="openColor = !openColor"
+                                    class="flex w-full items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno">
+                                
+                                <div class="flex items-center gap-3">
+                                    <div class="w-5 h-5 rounded-md border shadow-sm shrink-0" :style="`background-color: ${selectedColor}`"></div>
+                                    <span class="text-sm font-medium text-gray-700 font-nunito truncate">Color seleccionado</span>
+                                </div>
+
+                                <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Contenido del Dropdown -->
+                            <div x-show="openColor" @click.away="openColor = false" x-transition
+                                 class="absolute z-50 mt-2 w-full rounded-xl border border-gray-100 bg-white p-3 shadow-xl"
+                                 style="display:none;">
+                                
+                                <!-- Paleta (3 filas x 4 columnas) -->
+                                <div class="grid grid-cols-4 gap-3 place-items-center mb-3">
+                                    <template x-for="color in palette" :key="color">
+                                        <button type="button" @click="selectedColor = color; openColor = false"
+                                                class="w-6 h-6 rounded-md shadow-sm border-2 transition-transform focus:outline-none"
+                                                :class="selectedColor === color ? 'border-gray-800 scale-110' : 'border-transparent hover:scale-110'"
+                                                :style="`background-color: ${color}`"></button>
+                                    </template>
+                                </div>
+                                
+                                <!-- Custom Colors & Button -->
+                                <div class="mt-3 pt-3 border-t border-gray-100">
+                                    <!-- Slots libres (1 fila x 4 columnas) -->
+                                    <div class="grid grid-cols-4 gap-3 place-items-center mb-3">
+                                        <template x-for="(color, index) in customColors" :key="index">
+                                            <button type="button" @click="if(color !== '#E5E7EB') { selectedColor = color; openColor = false; }"
+                                                    class="w-6 h-6 rounded-md shadow-sm border-2 transition-transform focus:outline-none"
+                                                    :class="[
+                                                        selectedColor === color && color !== '#E5E7EB' ? 'border-gray-800 scale-110' : 'border-transparent',
+                                                        color !== '#E5E7EB' ? 'hover:scale-110 cursor-pointer' : 'cursor-default opacity-40'
+                                                    ]"
+                                                    :style="`background-color: ${color}`"></button>
+                                        </template>
+                                    </div>
+
+                                    <!-- Controles para Añadir Personalizado -->
+                                    <div class="flex items-center gap-2 mt-3">
+                                        <!-- Círculo calibrador -->
+                                        <div class="relative w-8 h-8 rounded-full shadow-sm border-2 border-gray-200 overflow-hidden shrink-0 cursor-pointer transition hover:border-violet-400 hover:scale-105" :style="`background-color: ${tempColor}`" title="Elegir color">
+                                            <input type="color" x-model="tempColor" class="absolute top-[-10px] left-[-10px] w-16 h-16 cursor-pointer opacity-0">
+                                        </div>
+                                        <!-- Botón Añadir explícito -->
+                                        <button type="button" @click="saveCustomColor()" class="flex-1 h-8 rounded-md bg-gray-50 border border-gray-200 hover:bg-violet-50 text-gray-600 hover:text-violet-700 hover:border-violet-300 text-xs font-bold font-nunito transition shadow-sm focus:outline-none focus:ring-1 focus:ring-violet-400">
+                                            Añadir color
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <x-input-error :messages="$errors->get('color_code')" class="mt-2" />
                     </div>
 
                     <!-- Botones -->

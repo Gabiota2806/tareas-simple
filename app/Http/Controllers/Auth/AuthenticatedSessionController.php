@@ -28,6 +28,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Auto-seleccionar Universidad Favorita o la primera disponible
+        $favoriteUni = \App\Models\University::where('user_id', Auth::id())
+                        ->where('is_favorite', true)
+                        ->first();
+
+        if (!$favoriteUni) {
+            $favoriteUni = \App\Models\University::where('user_id', Auth::id())->first();
+        }
+
+        if ($favoriteUni) {
+            $request->session()->put('active_university_id', $favoriteUni->id);
+            $request->session()->put('active_university_name', $favoriteUni->name);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

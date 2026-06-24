@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import Sortable from 'sortablejs';
 import Swal from 'sweetalert2';
+
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';

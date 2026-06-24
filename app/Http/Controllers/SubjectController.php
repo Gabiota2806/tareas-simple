@@ -14,17 +14,36 @@ class SubjectController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtenemos el parámetro de vigencia desde la consulta, por defecto mostramos solo las activas (is_active = 1)
-        $isActive = $request->boolean('is_active', true);
-        $selectedCareer = $request->query('career_id');
+        if ($request->has('is_active')) {
+            session(['subject_is_active' => $request->boolean('is_active')]);
+        }
+        if ($request->has('career_id')) {
+            session(['subject_career_id' => $request->query('career_id')]);
+        }
 
-        $careers = \App\Models\Career::whereHas('university', function($q) {
+        $isActive = session('subject_is_active', true);
+        $selectedCareer = session('subject_career_id');
+        $activeUniId = session('active_university_id');
+
+        $careersQuery = \App\Models\Career::whereHas('university', function($q) {
             $q->where('user_id', Auth::id());
-        })->orderBy('name')->get();
+        });
+
+        if ($activeUniId) {
+            $careersQuery->where('university_id', $activeUniId);
+        }
+
+        $careers = $careersQuery->orderBy('name')->get();
 
         // Consultamos las asignaturas del usuario autenticado filtrando por el estado de vigencia y carrera si está presente
-        $subjectsQuery = Subject::where('user_id', Auth::id())
+        $subjectsQuery = Subject::with('tasks')->where('user_id', Auth::id())
                            ->where('is_active', $isActive);
+
+        if ($activeUniId) {
+            $subjectsQuery->whereHas('career', function($q) use ($activeUniId) {
+                $q->where('university_id', $activeUniId);
+            });
+        }
 
         if ($selectedCareer) {
             $subjectsQuery->where('career_id', $selectedCareer);
@@ -40,10 +59,19 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        $careers = \App\Models\Career::whereHas('university', function($q) {
+        $activeUniId = session('active_university_id');
+        $careersQuery = \App\Models\Career::whereHas('university', function($q) {
             $q->where('user_id', Auth::id());
-        })->get();
-        return view('subjects.create', compact('careers'));
+        });
+
+        if ($activeUniId) {
+            $careersQuery->where('university_id', $activeUniId);
+        }
+
+        $careers = $careersQuery->get();
+        $selectedCareer = session('subject_career_id');
+        
+        return view('subjects.create', compact('careers', 'selectedCareer'));
     }
 
     /**
@@ -56,8 +84,14 @@ class SubjectController extends Controller
             'name'       => 'required|string|max:150',   // Coincide con $table->string('name', 150)
             'teacher'    => 'nullable|string|max:150',    // Coincide con $table->string('teacher', 150)->nullable()
             'classroom'  => 'nullable|string|max:50',     // Coincide con $table->string('classroom', 50)->nullable()
-            'color_code' => 'required|string|max:7',      // Coincide con $table->string('color_code', 7)
-            'career_id'  => 'required|exists:careers,id', // Validamos que el career_id exista en la tabla careers
+            'color_code' => 'required|string|max:7',
+            'career_id'  => 'required|exists:careers,id',
+            'approval_type' => 'nullable|string|in:promocional,regular,libre',
+            'final_grade' => 'nullable|numeric|min:0|max:10',
+        ], [
+            'career_id.required' => 'Debes seleccionar una carrera a la cual pertenezca la asignatura.',
+            'career_id.exists'   => 'La carrera seleccionada no es válida.',
+            'name.required'      => 'El nombre de la asignatura es obligatorio.'
         ]);
 
         // Inyectamos de forma segura el ID del usuario autenticado (Breeze)
@@ -78,9 +112,16 @@ class SubjectController extends Controller
             abort(403, 'Acción no autorizada.');
         }
 
-        $careers = \App\Models\Career::whereHas('university', function($q) {
+        $activeUniId = session('active_university_id');
+        $careersQuery = \App\Models\Career::whereHas('university', function($q) {
             $q->where('user_id', Auth::id());
-        })->get();
+        });
+
+        if ($activeUniId) {
+            $careersQuery->where('university_id', $activeUniId);
+        }
+
+        $careers = $careersQuery->get();
         return view('subjects.edit', compact('subject', 'careers'));
     }
 
@@ -94,12 +135,18 @@ class SubjectController extends Controller
         }
 
         $validated = $request->validate([
-            'name'       => 'required|string|max:150',
+            'name'       => 'sometimes|required|string|max:150',
             'teacher'    => 'nullable|string|max:150',
             'classroom'  => 'nullable|string|max:50',
-            'color_code' => 'required|string|max:7',
-            'career_id'  => 'required|exists:careers,id',
+            'color_code' => 'sometimes|required|string|max:7',
+            'career_id'  => 'sometimes|required|exists:careers,id',
             'is_active'  => 'sometimes|boolean',
+            'approval_type' => 'nullable|string|in:promocional,regular,libre',
+            'final_grade' => 'nullable|numeric|min:0|max:10',
+        ], [
+            'career_id.required' => 'Debes seleccionar una carrera a la cual pertenezca la asignatura.',
+            'career_id.exists'   => 'La carrera seleccionada no es válida.',
+            'name.required'      => 'El nombre de la asignatura es obligatorio.'
         ]);
 
         $subject->update($validated);
@@ -121,5 +168,20 @@ class SubjectController extends Controller
         $subject->update(['is_active' => false]);
 
         return redirect()->route('subjects.index')->with('success', 'Asignatura archivada correctamente.');
+    }
+
+    public function show(Subject $subject)
+    {
+        if ($subject->user_id !== Auth::id()) {
+            abort(403, 'Acción no autorizada.');
+        }
+
+        $tasks = $subject->tasks()
+            ->active()
+            ->whereNotIn('task_type', ['parcial', 'final'])
+            ->byPriority()
+            ->get();
+
+        return view('subjects.show', compact('subject', 'tasks'));
     }
 }
