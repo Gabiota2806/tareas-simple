@@ -145,19 +145,21 @@
                         if (estadoDestino === 'completada') backendStatus = 'completed';
                         
                         try {
-                            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                            
-                            await fetch(`/tasks/${tarjetaId}`, {
+                            await window.apiFetch(`/tasks/${tarjetaId}`, {
                                 method: 'PATCH',
                                 headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': token,
-                                    'Accept': 'application/json'
+                                    'Content-Type': 'application/json'
                                 },
                                 body: JSON.stringify({ 
                                     status: backendStatus 
                                 })
                             });
+
+                            // Notificar al componente Alpine interno para que actualice la píldora visual
+                            const cardElement = document.querySelector(`[data-id="${tarjetaId}"] > div`);
+                            if (cardElement) {
+                                cardElement.dispatchEvent(new CustomEvent('status-updated', { detail: { newStatus: backendStatus } }));
+                            }
                             
                             // Actualizar contadores dinámicamente contando las tarjetas (hijos) en cada columna
                             document.getElementById('count-pendiente').innerText = document.getElementById('col-pendiente').children.length;

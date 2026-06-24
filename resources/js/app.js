@@ -20,4 +20,19 @@ window.FullCalendar = {
     listPlugin,
 };
 
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+window.apiFetch = (url, options = {}) => {
+    return fetch(url, {
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            ...(options.headers || {}),
+        },
+        ...options,
+    });
+};
+
 Alpine.start();

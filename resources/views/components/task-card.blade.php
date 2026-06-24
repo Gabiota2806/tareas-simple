@@ -32,16 +32,14 @@
     
     async saveChanges() {
         try {
-            const token = document.querySelector('meta[name=csrf-token]').getAttribute('content');
-            
             let finalStatus = this.currentStatus;
             if (this.editGrade && this.editGrade !== '') {
                 finalStatus = 'completed';
             }
 
-            await fetch(`/tasks/{{ $id }}`, {
+            await window.apiFetch(`/tasks/{{ $id }}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     title: this.editTitle, 
                     description: this.editDescription,
@@ -59,7 +57,8 @@
             location.reload();
         } catch (err) { console.error(err); }
     }
-}">
+}" 
+@status-updated="currentStatus = $event.detail.newStatus">
 
     <div @click="open = true"
         class="cursor-pointer rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg relative overflow-hidden group">
@@ -78,20 +77,22 @@
                     {{ strtoupper($type) }}
                 </span>
 
-                @php
-                    $statusStyles = [
-                        'pending' => 'bg-gray-100 text-gray-600 border-gray-200',
-                        'in_progress' => 'bg-blue-100 text-blue-700 border-blue-200',
-                        'completed' => 'bg-green-100 text-green-700 border-green-200'
-                    ];
-                    $statusLabels = [
-                        'pending' => in_array($type, ['parcial', 'final']) ? '⏳ Pendiente' : '📋 Pendiente',
-                        'in_progress' => in_array($type, ['parcial', 'final']) ? '📖 Estudiando' : '⚡ En proceso',
-                        'completed' => in_array($type, ['parcial', 'final']) ? '✅ Rendido' : '✅ Completada'
-                    ];
-                @endphp
-                <span class="rounded-full px-3 py-1 text-xs font-semibold border {{ $statusStyles[$status] }}">
-                    {{ $statusLabels[$status] }}
+                <span 
+                    class="rounded-full px-3 py-1 text-xs font-semibold border transition-colors"
+                    :class="{
+                        'bg-gray-100 text-gray-600 border-gray-200': currentStatus === 'pending',
+                        'bg-blue-100 text-blue-700 border-blue-200': currentStatus === 'in_progress',
+                        'bg-green-100 text-green-700 border-green-200': currentStatus === 'completed'
+                    }"
+                    x-text="
+                        currentStatus === 'pending' 
+                            ? '{{ in_array($type, ['parcial', 'final']) ? '⏳ Pendiente' : '📋 Pendiente' }}'
+                            : (currentStatus === 'in_progress'
+                                ? '{{ in_array($type, ['parcial', 'final']) ? '📖 Estudiando' : '⚡ En proceso' }}'
+                                : '{{ in_array($type, ['parcial', 'final']) ? '✅ Rendido' : '✅ Completada' }}'
+                              )
+                    "
+                >
                 </span>
             </div>
 
@@ -170,9 +171,9 @@
                         changeStatus(status) {
                             this.currentStatus = status;
                             this.dropdownOpen = false;
-                            fetch(`/tasks/{{ $id }}`, {
+                            window.apiFetch(`/tasks/{{ $id }}`, {
                                 method: 'PATCH',
-                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'), 'Accept': 'application/json' },
+                                headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ status: status })
                             }).then(() => {
                                 let targetColId = 'col-pendiente';
