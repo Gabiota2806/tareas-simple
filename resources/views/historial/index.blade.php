@@ -7,8 +7,21 @@
         <p class="text-sm text-gray-500 mt-1">Acá podés ver todas las tareas y exámenes que ya completaste. Permanecerán guardados acá como registro de tu avance.</p>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-8" x-data="{ searchQuery: '' }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Buscador en tiempo real -->
+            <div class="mb-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" x-model="searchQuery" placeholder="Buscar tareas completadas..."
+                        class="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-12 pr-4 text-sm text-gray-700 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+                </div>
+            </div>
             @if($tasks->isEmpty())
                 <div class="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
@@ -20,24 +33,26 @@
             @else
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($tasks as $task)
-                        <x-task-card 
-                            id="{{ $task->id }}"
-                            status="{{ $task->status }}"
-                            title="{{ $task->title }}"
-                            subject="{{ $task->subject->name ?? 'Sin Asignatura' }}"
-                            subjectId="{{ $task->subject_id }}"
-                            type="{{ $task->task_type }}"
-                            priority="{{ $task->priority }}"
-                            description="{{ $task->description }}"
-                            dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
-                            rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
-                            teamMembers="{{ $task->team_members }}"
-                            submissionFormat="{{ $task->submission_format }}"
-                            grade="{{ $task->grade }}"
-                            enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
-                            examType="{{ $task->exam_type }}"
-                            :subtasks="$task->nestedSubtasks ?? collect()"
-                        />
+                        <div x-show="searchQuery === '' || '{{ addslashes($task->title) }}'.toLowerCase().includes(searchQuery.toLowerCase())">
+                            <x-task-card 
+                                id="{{ $task->id }}"
+                                status="{{ $task->status }}"
+                                title="{{ $task->title }}"
+                                subject="{{ $task->subject->name ?? 'Sin Asignatura' }}"
+                                subjectId="{{ $task->subject_id }}"
+                                type="{{ $task->task_type }}"
+                                priority="{{ $task->priority }}"
+                                description="{{ $task->description }}"
+                                dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}"
+                                rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                                teamMembers="{{ $task->team_members }}"
+                                submissionFormat="{{ $task->submission_format }}"
+                                grade="{{ $task->grade }}"
+                                enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}"
+                                examType="{{ $task->exam_type }}"
+                                :subtasks="$task->nestedSubtasks ?? collect()"
+                            />
+                        </div>
                     @endforeach
                 </div>
             @endif
