@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="font-nunito bg-[#F8FAFC] min-h-screen text-[#1E293B]">
+    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
 
             <!-- Header -->
@@ -57,8 +57,8 @@
             <!-- Contenido -->
             <div class="space-y-8">
                 @forelse($subjects as $subject)
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden transition-shadow hover:shadow-md">
-                        <div class="bg-gray-50/50 border-b border-gray-100 px-6 py-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="bg-white rounded-3xl shadow-md border-t-8 border-x border-b border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg" style="border-top-color: {{ $subject->color_code ?? '#8B5CF6' }}">
+                        <div class="bg-white border-b border-gray-100 px-6 py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div class="flex items-start gap-3">
                                 <span class="w-4 h-4 mt-1.5 rounded-full shadow-sm shrink-0" style="background-color: {{ $subject->color_code }}"></span>
                                 <div>
@@ -100,7 +100,7 @@
                             </div>
                         </div>
                         
-                        <div class="p-6">
+                        <div class="p-6 sm:p-8 bg-slate-50/80">
                             @if($subject->tasks->isEmpty())
                                 <div class="text-center py-10">
                                     <p class="text-sm text-gray-500 mb-4">No hay evaluaciones registradas para esta materia.</p>
@@ -117,6 +117,7 @@
                                             status="{{ $exam->status }}"
                                             title="{{ $exam->title }}"
                                             subject="{{ $subject->name }}"
+                                            subjectId="{{ $subject->id }}"
                                             type="{{ $exam->task_type }}"
                                             priority="{{ $exam->priority }}"
                                             description="{{ $exam->description }}"
@@ -127,6 +128,7 @@
                                             grade="{{ $exam->grade }}"
                                             enrollmentDate="{{ $exam->enrollment_date ? $exam->enrollment_date->format('Y-m-d') : '' }}"
                                             examType="{{ $exam->exam_type }}"
+                                            :subtasks="$exam->nestedSubtasks ?? collect()"
                                         />
                                     @endforeach
                                 </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\AcademicRecordController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,7 +51,7 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::post('/active-university', function (\Illuminate\Http\Request $request) {
         $request->validate(['university_id' => 'required|exists:universities,id']);
         session(['active_university_id' => $request->university_id]);
-        return back();
+        return redirect()->route('dashboard');
     })->name('active-university.set');
 
     // Buscador global
@@ -66,6 +67,9 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::get('/subjects/create', [SubjectController::class, 'create'])->name('subjects.create');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
     Route::get('/subjects/{subject}', [SubjectController::class, 'show'])->name('subjects.show');
+
+    // Historial
+    Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
     Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
@@ -73,7 +77,7 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     
     // Vista Calendario
-    Route::view('/calendar', 'calendar.index')->name('calendar.index');
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);

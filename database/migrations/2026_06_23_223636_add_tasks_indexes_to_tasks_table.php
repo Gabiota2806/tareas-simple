@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->index(['user_id', 'is_deleted'], 'tasks_user_id_is_deleted_index');
-            $table->index(['user_id', 'subject_id'], 'tasks_user_id_subject_id_index');
-        });
+        try {
+            Schema::table('tasks', function (Blueprint $table) {
+                $table->index(['user_id', 'is_deleted'], 'tasks_user_id_is_deleted_index');
+            });
+        } catch (\Exception $e) {}
+
+        try {
+            Schema::table('tasks', function (Blueprint $table) {
+                $table->index(['user_id', 'subject_id'], 'tasks_user_id_subject_id_index');
+            });
+        } catch (\Exception $e) {}
     }
 
     /**
