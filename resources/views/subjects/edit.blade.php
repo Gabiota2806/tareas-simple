@@ -102,64 +102,122 @@
 
                     <!-- Horarios de cursada (Schedules) -->
                     <input type="hidden" name="update_schedules" value="1">
-                    <div x-data="{
-                        schedules: {{ $subject->schedules->toJson() }}.map(s => ({
+                    <div x-data='{
+                        schedules: @json($subject->schedules).map(s => ({
+                            id: s.id,
                             day_of_week: s.day_of_week,
-                            classroom: s.classroom || '',
-                            start_time: s.start_time ? s.start_time.substring(0, 5) : '',
-                            end_time: s.end_time ? s.end_time.substring(0, 5) : ''
+                            classroom: s.classroom || "",
+                            start_h: s.start_time ? s.start_time.substring(0, 2) : "08",
+                            start_m: s.start_time ? s.start_time.substring(3, 5) : "00",
+                            end_h: s.end_time ? s.end_time.substring(0, 2) : "10",
+                            end_m: s.end_time ? s.end_time.substring(3, 5) : "00"
                         })),
-                        days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                        hours: Array.from({length: 24}, (_, i) => i.toString().padStart(2, "0")),
+                        minutes: ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"],
+                        days: [
+                            { id: 1, name: "Lunes", short: "L" },
+                            { id: 2, name: "Martes", short: "M" },
+                            { id: 3, name: "Miércoles", short: "X" },
+                            { id: 4, name: "Jueves", short: "J" },
+                            { id: 5, name: "Viernes", short: "V" },
+                            { id: 6, name: "Sábado", short: "S" },
+                            { id: 0, name: "Domingo", short: "D" }
+                        ],
                         addSchedule() {
-                            this.schedules.push({ day_of_week: 1, start_time: '08:00', end_time: '10:00', classroom: '' });
+                            this.schedules.push({ day_of_week: 1, start_h: "08", start_m: "00", end_h: "10", end_m: "00", classroom: "" });
                         },
                         removeSchedule(index) {
                             this.schedules.splice(index, 1);
                         }
-                    }">
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="block text-sm font-bold text-gray-700 font-nunito">Horarios de cursada</label>
-                            <button type="button" @click="addSchedule" class="text-xs font-bold text-violet-600 hover:text-violet-800 transition bg-violet-50 hover:bg-violet-100 px-2 py-1 rounded">
-                                + Añadir horario
+                    }'>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 font-nunito">Horarios de cursada</label>
+                                <p class="text-xs text-gray-500">Agregá los días que tenés clases</p>
+                            </div>
+                            <button type="button" @click="addSchedule" class="inline-flex items-center gap-1.5 text-sm font-bold text-violet-700 bg-violet-50 hover:bg-violet-100 hover:text-violet-800 transition-colors px-3 py-1.5 rounded-lg shadow-sm border border-violet-100">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Añadir horario
                             </button>
                         </div>
                         
-                        <div class="space-y-3">
+                        <div class="space-y-4">
                             <template x-for="(schedule, index) in schedules" :key="index">
-                                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg relative">
-                                    <button type="button" @click="removeSchedule(index)" class="absolute top-2 right-2 text-red-400 hover:text-red-600">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <div class="p-4 bg-white border border-gray-100 shadow-sm rounded-2xl relative group transition hover:border-violet-200">
+                                    <button type="button" @click="removeSchedule(index)" class="absolute -top-2 -right-2 bg-red-100 text-red-500 rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition shadow-sm hover:bg-red-500 hover:text-white" title="Eliminar horario">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
                                     
-                                    <div class="grid grid-cols-2 gap-3 mb-3 pr-6">
+                                    <div class="flex flex-col gap-3">
+                                        <!-- Selector de Día tipo pastillas -->
                                         <div>
-                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Día</label>
-                                            <select x-model="schedule.day_of_week" :name="`schedules[${index}][day_of_week]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
-                                                <template x-for="(day, dIndex) in days" :key="dIndex">
-                                                    <option :value="dIndex" x-text="day"></option>
+                                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Día</label>
+                                            <div class="flex justify-between w-full items-center gap-1 sm:gap-2">
+                                                <input type="hidden" :name="`schedules[${index}][day_of_week]`" x-model="schedule.day_of_week">
+                                                <template x-for="day in days" :key="day.id">
+                                                    <button type="button" 
+                                                        @click="schedule.day_of_week = day.id"
+                                                        class="flex-1 max-w-[40px] aspect-square rounded-full text-[11px] font-bold transition flex items-center justify-center border"
+                                                        :class="schedule.day_of_week === day.id ? 'bg-violet-600 text-white border-violet-600 shadow-md' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 hover:border-gray-300'">
+                                                        <span x-text="day.short"></span>
+                                                    </button>
                                                 </template>
-                                            </select>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Aula (Opcional)</label>
-                                            <input type="text" x-model="schedule.classroom" :name="`schedules[${index}][classroom]`" placeholder="Ej: Aula 10" class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Inicio</label>
-                                            <input type="time" x-model="schedule.start_time" :name="`schedules[${index}][start_time]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
-                                        </div>
-                                        <div>
-                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Fin</label>
-                                            <input type="time" x-model="schedule.end_time" :name="`schedules[${index}][end_time]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
+
+                                        <div class="flex flex-col gap-4 mt-2">
+                                            <!-- Selector de Horas (Custom UI) -->
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Horario</label>
+                                                <div class="flex items-center justify-between bg-gray-50 p-2 sm:p-2.5 rounded-xl border border-gray-100 transition-all">
+                                                    
+                                                    <!-- Inicio -->
+                                                    <div class="flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg p-1 shadow-sm focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 transition-all">
+                                                        <input type="hidden" :name="`schedules[${index}][start_time]`" :value="`${schedule.start_h}:${schedule.start_m}`">
+                                                        <select x-model="schedule.start_h" class="appearance-none !bg-none bg-transparent text-center font-bold text-gray-700 w-10 sm:w-12 py-1 !px-0 border-none rounded-md focus:ring-0 focus:bg-violet-100 focus:text-violet-900 focus:outline-none cursor-pointer hover:bg-gray-100 hover:text-violet-600 transition-all">
+                                                            <template x-for="h in hours" :key="h"><option :value="h" x-text="h"></option></template>
+                                                        </select>
+                                                        <span class="text-gray-300 font-bold mb-0.5">:</span>
+                                                        <select x-model="schedule.start_m" class="appearance-none !bg-none bg-transparent text-center font-bold text-gray-700 w-10 sm:w-12 py-1 !px-0 border-none rounded-md focus:ring-0 focus:bg-violet-100 focus:text-violet-900 focus:outline-none cursor-pointer hover:bg-gray-100 hover:text-violet-600 transition-all">
+                                                            <template x-for="m in minutes" :key="m"><option :value="m" x-text="m"></option></template>
+                                                        </select>
+                                                    </div>
+
+                                                    <span class="text-gray-400 font-medium text-xs px-2">hasta</span>
+
+                                                    <!-- Fin -->
+                                                    <div class="flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg p-1 shadow-sm focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 transition-all">
+                                                        <input type="hidden" :name="`schedules[${index}][end_time]`" :value="`${schedule.end_h}:${schedule.end_m}`">
+                                                        <select x-model="schedule.end_h" class="appearance-none !bg-none bg-transparent text-center font-bold text-gray-700 w-10 sm:w-12 py-1 !px-0 border-none rounded-md focus:ring-0 focus:bg-violet-100 focus:text-violet-900 focus:outline-none cursor-pointer hover:bg-gray-100 hover:text-violet-600 transition-all">
+                                                            <template x-for="h in hours" :key="h"><option :value="h" x-text="h"></option></template>
+                                                        </select>
+                                                        <span class="text-gray-300 font-bold mb-0.5">:</span>
+                                                        <select x-model="schedule.end_m" class="appearance-none !bg-none bg-transparent text-center font-bold text-gray-700 w-10 sm:w-12 py-1 !px-0 border-none rounded-md focus:ring-0 focus:bg-violet-100 focus:text-violet-900 focus:outline-none cursor-pointer hover:bg-gray-100 hover:text-violet-600 transition-all">
+                                                            <template x-for="m in minutes" :key="m"><option :value="m" x-text="m"></option></template>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Aula -->
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Lugar</label>
+                                                <div class="flex w-full items-center gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100 focus-within:border-violet-300 focus-within:ring-1 focus-within:ring-violet-300 transition-all">
+                                                    <svg class="w-5 h-5 text-gray-400 shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                                    <input type="text" x-model="schedule.classroom" :name="`schedules[${index}][classroom]`" placeholder="Aula (Opcional)" class="flex-1 w-full text-sm font-bold text-gray-700 rounded-md border-transparent py-1 px-1 focus:ring-0 focus:border-transparent bg-transparent placeholder-gray-400">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </template>
                             
                             <template x-if="schedules.length === 0">
-                                <p class="text-xs text-gray-400 italic text-center py-2 bg-gray-50 rounded-lg border border-gray-200">Sin horarios definidos. No aparecerán en el calendario.</p>
+                                <div class="flex flex-col items-center justify-center py-6 px-4 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200">
+                                    <svg class="w-8 h-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <p class="text-sm font-medium text-gray-500">Sin horarios definidos</p>
+                                    <p class="text-xs text-gray-400 mt-1">No aparecerán clases en el calendario</p>
+                                </div>
                             </template>
                         </div>
                     </div>

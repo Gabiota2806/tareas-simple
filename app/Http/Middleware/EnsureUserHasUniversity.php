@@ -43,6 +43,19 @@ class EnsureUserHasUniversity
                         return redirect()->route('universities.index')
                             ->with('warning', '¡Atención! El sistema requiere que establezcas una universidad favorita obligatoriamente para continuar.');
                     }
+                } else {
+                    // Verificamos si tiene al menos una carrera
+                    $careerCount = \App\Models\Career::whereHas('university', function($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    })->count();
+
+                    if ($careerCount === 0) {
+                        $careerResolutionRoutes = ['careers.create', 'careers.store', 'universities.index', 'universities.favorite', 'universities.destroy', 'universities.edit', 'universities.update', 'universities.create', 'universities.store'];
+                        if (!in_array($routeName, $careerResolutionRoutes)) {
+                            return redirect()->route('careers.create')
+                                ->with('warning', '¡Paso 2! Ahora debés registrar tu carrera para poder agregar materias.');
+                        }
+                    }
                 }
             }
         }
