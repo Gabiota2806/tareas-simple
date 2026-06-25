@@ -53,6 +53,14 @@ class CareerController extends Controller
             'university_id' => $university->id,
         ]);
 
+        $subjectCount = \App\Models\Subject::whereHas('career.university', function($q) use ($request) {
+            $q->where('user_id', $request->user()->id);
+        })->count();
+
+        if ($subjectCount === 0) {
+            return redirect()->route('subjects.create')->with('success', '¡Carrera creada! Paso 3: Agregá tu primera materia.');
+        }
+
         return redirect()->route('careers.index')->with('success', 'Carrera creada correctamente.');
     }
 
