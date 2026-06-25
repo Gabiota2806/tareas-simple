@@ -1,6 +1,20 @@
 <x-app-layout>
-    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]">
+    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]" x-data="{ searchQuery: '' }">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
+
+            <!-- Buscador Global en tiempo real -->
+            <div class="mb-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" x-model="searchQuery" placeholder="Buscar materias o exámenes..."
+                        class="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-12 pr-4 text-sm text-gray-700 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+                </div>
+            </div>
 
             <!-- Header -->
             <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -57,7 +71,21 @@
             <!-- Contenido -->
             <div class="space-y-8">
                 @forelse($subjects as $subject)
-                    <div class="bg-white rounded-3xl shadow-md border-t-8 border-x border-b border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg" style="border-top-color: {{ $subject->color_code ?? '#8B5CF6' }}">
+                    <div x-data="{
+                            matchSearch() {
+                                if (this.searchQuery === '') return true;
+                                let q = this.searchQuery.toLowerCase();
+                                if ('{{ addslashes($subject->name) }}'.toLowerCase().includes(q)) return true;
+                                
+                                @foreach($subject->tasks as $exam)
+                                    if ('{{ addslashes($exam->title) }}'.toLowerCase().includes(q)) return true;
+                                @endforeach
+                                
+                                return false;
+                            }
+                        }" 
+                        x-show="matchSearch()" 
+                        class="bg-white rounded-3xl shadow-md border-t-8 border-x border-b border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg" style="border-top-color: {{ $subject->color_code ?? '#8B5CF6' }}">
                         <div class="bg-white border-b border-gray-100 px-6 py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div class="flex items-start gap-3">
                                 <span class="w-4 h-4 mt-1.5 rounded-full shadow-sm shrink-0" style="background-color: {{ $subject->color_code }}"></span>
@@ -112,24 +140,26 @@
                             @else
                                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                     @foreach($subject->tasks as $exam)
-                                        <x-task-card 
-                                            id="{{ $exam->id }}"
-                                            status="{{ $exam->status }}"
-                                            title="{{ $exam->title }}"
-                                            subject="{{ $subject->name }}"
-                                            subjectId="{{ $subject->id }}"
-                                            type="{{ $exam->task_type }}"
-                                            priority="{{ $exam->priority }}"
-                                            description="{{ $exam->description }}"
-                                            dueDate="{{ $exam->due_date ? $exam->due_date->format('d M') : 'Sin fecha' }}"
-                                            rawDueDate="{{ $exam->due_date ? $exam->due_date->format('Y-m-d') : '' }}"
-                                            teamMembers="{{ $exam->team_members }}"
-                                            submissionFormat="{{ $exam->submission_format }}"
-                                            grade="{{ $exam->grade }}"
-                                            enrollmentDate="{{ $exam->enrollment_date ? $exam->enrollment_date->format('Y-m-d') : '' }}"
-                                            examType="{{ $exam->exam_type }}"
-                                            :subtasks="$exam->nestedSubtasks ?? collect()"
-                                        />
+                                        <div x-show="searchQuery === '' || '{{ addslashes($subject->name) }}'.toLowerCase().includes(searchQuery.toLowerCase()) || '{{ addslashes($exam->title) }}'.toLowerCase().includes(searchQuery.toLowerCase())">
+                                            <x-task-card 
+                                                id="{{ $exam->id }}"
+                                                status="{{ $exam->status }}"
+                                                title="{{ $exam->title }}"
+                                                subject="{{ $subject->name }}"
+                                                subjectId="{{ $subject->id }}"
+                                                type="{{ $exam->task_type }}"
+                                                priority="{{ $exam->priority }}"
+                                                description="{{ $exam->description }}"
+                                                dueDate="{{ $exam->due_date ? $exam->due_date->format('d M') : 'Sin fecha' }}"
+                                                rawDueDate="{{ $exam->due_date ? $exam->due_date->format('Y-m-d') : '' }}"
+                                                teamMembers="{{ $exam->team_members }}"
+                                                submissionFormat="{{ $exam->submission_format }}"
+                                                grade="{{ $exam->grade }}"
+                                                enrollmentDate="{{ $exam->enrollment_date ? $exam->enrollment_date->format('Y-m-d') : '' }}"
+                                                examType="{{ $exam->exam_type }}"
+                                                :subtasks="$exam->nestedSubtasks ?? collect()"
+                                            />
+                                        </div>
                                     @endforeach
                                 </div>
                             @endif

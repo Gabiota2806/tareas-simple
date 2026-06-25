@@ -1,6 +1,20 @@
 <x-app-layout>
-    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]">
+    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]" x-data="{ searchQuery: '' }">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
+
+            <!-- Buscador Global en tiempo real -->
+            <div class="mb-8">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" x-model="searchQuery" placeholder="Buscar materias..."
+                        class="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-12 pr-4 text-sm text-gray-700 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
+                </div>
+            </div>
 
             <!-- Header del dashboard -->
             <section class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -90,7 +104,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 @forelse($activeSubjects as $subject)
-                    <div class="rounded-2xl border-l-4 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md flex flex-col justify-between" style="border-left-color: {{ $subject->color_code }}">
+                    <div x-show="searchQuery === '' || '{{ addslashes($subject->name) }}'.toLowerCase().includes(searchQuery.toLowerCase())" 
+                         class="rounded-2xl border-l-4 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md flex flex-col justify-between" 
+                         style="border-left-color: {{ $subject->color_code }}">
                         <div class="flex items-start justify-between mb-4">
                             <div>
                                 <h4 class="font-bold text-gray-800">
