@@ -49,7 +49,7 @@ class SubjectController extends Controller
             $subjectsQuery->where('career_id', $selectedCareer);
         }
 
-        $subjects = $subjectsQuery->get();
+        $subjects = $subjectsQuery->orderBy('name', 'asc')->orderBy('id', 'asc')->get();
 
         return view('subjects.index', compact('subjects', 'isActive', 'careers', 'selectedCareer'));
     }
@@ -206,12 +206,11 @@ class SubjectController extends Controller
         }
 
         $tasks = $subject->tasks()
+            ->roots()
             ->active()
+            ->with('nestedSubtasks')
             ->whereNotIn('task_type', ['parcial', 'final'])
-            ->where(function($query) {
-                $query->where('status', '!=', 'completed')
-                      ->orWhere('updated_at', '>=', now()->subDays(15));
-            })
+            ->visible()
             ->byPriority()
             ->get();
 

@@ -30,7 +30,8 @@ class Task extends Model
         'submission_format',
         'grade',
         'enrollment_date',
-        'exam_type'
+        'exam_type',
+        'completed_at'
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class Task extends Model
         'is_deleted'      => 'boolean',
         'due_date'        => 'date',
         'enrollment_date' => 'date',
+        'completed_at'    => 'datetime',
     ];
 
     /**
@@ -73,6 +75,14 @@ class Task extends Model
     }
 
     /**
+     * Relación recursiva directa infinita: Obtener todas las subtareas anidadas activas.
+     */
+    public function nestedSubtasks(): HasMany
+    {
+        return $this->subtasks()->active()->orderBy('created_at', 'asc')->with('nestedSubtasks');
+    }
+
+    /**
      * Scope para obtener solo las tareas raíz (las que no son subtareas).
      */
     public function scopeRoots($query)
@@ -86,7 +96,7 @@ class Task extends Model
      */
     public function scopeByPriority($query)
     {
-        return $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low')");
+        return $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low')")->orderBy('id', 'asc');
     }
 
     /**
@@ -95,5 +105,17 @@ class Task extends Model
     public function scopeActive($query)
     {
         return $query->where('is_deleted', false);
+    }
+
+    /**
+     * Scope para ocultar tareas completadas hace más de 7 días.
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where(function($q) {
+            $q->where('status', '!=', 'completed')
+              ->orWhereNull('completed_at')
+              ->orWhere('completed_at', '>=', now()->subDays(7));
+        });
     }
 }

@@ -1,11 +1,20 @@
 <x-app-layout>
     <div class="font-nunito bg-[#F8FAFC] min-h-screen text-[#1E293B]" 
          x-data="{
-            searchQuery: '',
-            filterType: 'all',
-            colPendiente: true,
-            colProceso: true,
-            colCompletada: true,
+            searchQuery: localStorage.getItem('kanban_{{ $subject->id }}_search') || '',
+            filterType: localStorage.getItem('kanban_{{ $subject->id }}_filterType') || 'all',
+            colPendiente: localStorage.getItem('kanban_{{ $subject->id }}_colPendiente') === null ? true : localStorage.getItem('kanban_{{ $subject->id }}_colPendiente') === 'true',
+            colProceso: localStorage.getItem('kanban_{{ $subject->id }}_colProceso') === null ? true : localStorage.getItem('kanban_{{ $subject->id }}_colProceso') === 'true',
+            colCompletada: localStorage.getItem('kanban_{{ $subject->id }}_colCompletada') === null ? true : localStorage.getItem('kanban_{{ $subject->id }}_colCompletada') === 'true',
+            
+            init() {
+                this.$watch('searchQuery', val => localStorage.setItem('kanban_{{ $subject->id }}_search', val));
+                this.$watch('filterType', val => localStorage.setItem('kanban_{{ $subject->id }}_filterType', val));
+                this.$watch('colPendiente', val => localStorage.setItem('kanban_{{ $subject->id }}_colPendiente', val));
+                this.$watch('colProceso', val => localStorage.setItem('kanban_{{ $subject->id }}_colProceso', val));
+                this.$watch('colCompletada', val => localStorage.setItem('kanban_{{ $subject->id }}_colCompletada', val));
+            },
+            
             toggleCol(col) {
                 let openCount = (this.colPendiente ? 1 : 0) + (this.colProceso ? 1 : 0) + (this.colCompletada ? 1 : 0);
                 if (this[col]) {
@@ -136,7 +145,7 @@
                             @foreach($tasks->where('status', 'pending')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey)) as $task)
                                 <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing"
                                      x-show="checkMatch('{{ addslashes($task->title) }}', '{{ addslashes($task->description) }}', '{{ $task->task_type }}')">
-                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" />
+                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" subjectId="{{ $subject->id }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" :subtasks="$task->nestedSubtasks" />
                                 </div>
                             @endforeach
                         </div>
@@ -161,7 +170,7 @@
                             @foreach($tasks->where('status', 'in_progress')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey)) as $task)
                                 <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing"
                                      x-show="checkMatch('{{ addslashes($task->title) }}', '{{ addslashes($task->description) }}', '{{ $task->task_type }}')">
-                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" />
+                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" subjectId="{{ $subject->id }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" :subtasks="$task->nestedSubtasks" />
                                 </div>
                             @endforeach
                         </div>
@@ -186,7 +195,7 @@
                             @foreach($tasks->where('status', 'completed')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey)) as $task)
                                 <div data-id="{{ $task->id }}" class="cursor-grab active:cursor-grabbing"
                                      x-show="checkMatch('{{ addslashes($task->title) }}', '{{ addslashes($task->description) }}', '{{ $task->task_type }}')">
-                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" />
+                                    <x-task-card id="{{ $task->id }}" status="{{ $task->status }}" title="{{ $task->title }}" subject="{{ $subject->name }}" subjectId="{{ $subject->id }}" type="{{ $task->task_type }}" priority="{{ $task->priority }}" description="{{ $task->description }}" dueDate="{{ $task->due_date ? $task->due_date->format('d M') : 'Sin fecha' }}" rawDueDate="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}" teamMembers="{{ $task->team_members }}" submissionFormat="{{ $task->submission_format }}" grade="{{ $task->grade }}" enrollmentDate="{{ $task->enrollment_date ? $task->enrollment_date->format('Y-m-d') : '' }}" examType="{{ $task->exam_type }}" :subtasks="$task->nestedSubtasks" />
                                 </div>
                             @endforeach
                         </div>
@@ -211,6 +220,27 @@
                     chosenClass: 'opacity-50',
                     
                     onEnd: async function (evt) {
+                        if (evt.from === evt.to) return;
+
+                        const innerDiv = evt.item.querySelector('[data-has-subtasks]');
+                        if (innerDiv && innerDiv.getAttribute('data-has-subtasks') === 'true') {
+                            Swal.fire({
+                                title: 'Estado Automático',
+                                text: 'El estado de esta tarea se calcula automáticamente porque tiene subtareas. Debes completar las subtareas para avanzar.',
+                                icon: 'info',
+                                confirmButtonColor: '#8b5cf6',
+                                confirmButtonText: 'Entendido',
+                                customClass: { popup: 'font-nunito rounded-2xl shadow-xl border-t-4 border-violet-500' }
+                            });
+                            // Revertir el movimiento
+                            if (evt.from.children[evt.oldIndex]) {
+                                evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
+                            } else {
+                                evt.from.appendChild(evt.item);
+                            }
+                            return;
+                        }
+
                         const tarjetaId = evt.item.getAttribute('data-id');
                         const estadoDestino = evt.to.getAttribute('data-estado');
 

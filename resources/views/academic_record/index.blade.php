@@ -117,6 +117,7 @@
                                             status="{{ $exam->status }}"
                                             title="{{ $exam->title }}"
                                             subject="{{ $subject->name }}"
+                                            subjectId="{{ $subject->id }}"
                                             type="{{ $exam->task_type }}"
                                             priority="{{ $exam->priority }}"
                                             description="{{ $exam->description }}"
@@ -127,6 +128,7 @@
                                             grade="{{ $exam->grade }}"
                                             enrollmentDate="{{ $exam->enrollment_date ? $exam->enrollment_date->format('Y-m-d') : '' }}"
                                             examType="{{ $exam->exam_type }}"
+                                            :subtasks="$exam->nestedSubtasks ?? collect()"
                                         />
                                     @endforeach
                                 </div>
