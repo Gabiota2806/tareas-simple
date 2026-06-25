@@ -75,7 +75,7 @@
                         class="rounded-2xl shadow-md border-t-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative"
                         style="border-top-color: {{ $subject->color_code ?? '#8B5CF6' }}">
                         
-                        <div class="p-5 cursor-pointer" @click="if(!$event.target.closest('button') && !$event.target.closest('a') && !$event.target.closest('input')) openModal = true">
+                        <div class="p-5 cursor-pointer" @click="if(!$event.target.closest('button') && !$event.target.closest('a') && !$event.target.closest('input') && !$event.target.closest('label')) openModal = true">
                             <h2 class="text-xl font-bold text-gray-800 mb-4">
                                 {{ $subject->name }}
                             </h2>
@@ -127,19 +127,35 @@
                                             :class="active ? 'text-green-600' : 'text-red-500'" class="text-sm font-medium">
                                         </span>
                                         <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" x-model="active" 
-                                                @change="
-                                                    fetch(`/subjects/{{ $subject->id }}`, {
-                                                        method: 'PATCH',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'),
-                                                            'Accept': 'application/json'
-                                                        },
-                                                        body: JSON.stringify({ is_active: active ? 1 : 0 })
-                                                    }).catch(err => { 
-                                                        active = !active;
-                                                        console.error(err); 
+                                            <input type="checkbox" :checked="active" 
+                                                @click.prevent="
+                                                    Swal.fire({
+                                                        title: active ? '¿Archivar asignatura?' : '¿Activar asignatura?',
+                                                        text: active ? 'Al archivarla dejarás de verla en el tablero activo principal.' : 'La asignatura volverá a estar disponible como activa.',
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: active ? '#ef4444' : '#8b5cf6',
+                                                        cancelButtonColor: '#9ca3af',
+                                                        confirmButtonText: active ? 'Sí, archivar' : 'Sí, activar',
+                                                        cancelButtonText: 'Cancelar',
+                                                        customClass: { popup: 'font-nunito rounded-2xl shadow-xl border-t-4 ' + (active ? 'border-red-500' : 'border-violet-500'), title: 'font-bold text-gray-800', confirmButton: 'rounded-lg font-semibold shadow-md px-5 py-2.5', cancelButton: 'rounded-lg font-semibold shadow-sm px-5 py-2.5' }
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            let newStatus = !active;
+                                                            fetch(`/subjects/{{ $subject->id }}`, {
+                                                                method: 'PATCH',
+                                                                headers: {
+                                                                    'Content-Type': 'application/json',
+                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content'),
+                                                                    'Accept': 'application/json'
+                                                                },
+                                                                body: JSON.stringify({ is_active: newStatus ? 1 : 0 })
+                                                            }).then(() => {
+                                                                active = newStatus;
+                                                            }).catch(err => { 
+                                                                console.error(err); 
+                                                            });
+                                                        }
                                                     });
                                                 "
                                                 class="sr-only peer">

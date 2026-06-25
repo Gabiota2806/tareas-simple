@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="font-nunito bg-[#F8FAFC] min-h-screen text-[#1E293B]">
+    <div class="font-nunito bg-gray-100 min-h-screen text-[#1E293B]">
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-24 lg:pb-12">
 
             <!-- Header del dashboard -->

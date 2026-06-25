@@ -94,6 +94,14 @@ class SubjectController extends Controller
             'name.required'      => 'El nombre de la asignatura es obligatorio.'
         ]);
 
+        $request->validate([
+            'schedules' => 'nullable|array',
+            'schedules.*.day_of_week' => 'required_with:schedules|integer|between:0,6',
+            'schedules.*.start_time' => 'required_with:schedules|date_format:H:i',
+            'schedules.*.end_time' => 'required_with:schedules|date_format:H:i|after:schedules.*.start_time',
+            'schedules.*.classroom' => 'nullable|string|max:50',
+        ]);
+
         // Inyectamos de forma segura el ID del usuario autenticado (Breeze)
         $validated['user_id'] = Auth::id();
 
@@ -102,6 +110,10 @@ class SubjectController extends Controller
 
         // Creamos la asignatura mediante asignación masiva usando el modelo oficial
         $subject = Subject::create($validated);
+
+        if ($request->filled('schedules')) {
+            $subject->schedules()->createMany($request->schedules);
+        }
 
         return redirect('/subjects')->with('success', 'Asignatura registrada con éxito.');
     }
@@ -149,7 +161,24 @@ class SubjectController extends Controller
             'name.required'      => 'El nombre de la asignatura es obligatorio.'
         ]);
 
+        if ($request->has('update_schedules')) {
+            $request->validate([
+                'schedules' => 'nullable|array',
+                'schedules.*.day_of_week' => 'required_with:schedules|integer|between:0,6',
+                'schedules.*.start_time' => 'required_with:schedules|date_format:H:i',
+                'schedules.*.end_time' => 'required_with:schedules|date_format:H:i|after:schedules.*.start_time',
+                'schedules.*.classroom' => 'nullable|string|max:50',
+            ]);
+        }
+
         $subject->update($validated);
+
+        if ($request->has('update_schedules')) {
+            $subject->schedules()->delete();
+            if ($request->filled('schedules')) {
+                $subject->schedules()->createMany($request->schedules);
+            }
+        }
 
         return redirect()->route('subjects.index')->with('success', 'Materia actualizada correctamente.');
     }
@@ -179,6 +208,10 @@ class SubjectController extends Controller
         $tasks = $subject->tasks()
             ->active()
             ->whereNotIn('task_type', ['parcial', 'final'])
+            ->where(function($query) {
+                $query->where('status', '!=', 'completed')
+                      ->orWhere('updated_at', '>=', now()->subDays(15));
+            })
             ->byPriority()
             ->get();
 

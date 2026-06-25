@@ -12,48 +12,47 @@
             </p>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
-
-            <!-- Calendario -->
-            <div class="rounded-3xl bg-white p-6 shadow-sm border border-gray-100">
-                <div id="calendar"></div>
-            </div>
-
-            <!-- Panel lateral -->
-            <div class="space-y-4">
-
-                <div class="rounded-3xl bg-white p-5 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-800 mb-3">
-                        Próximas entregas
-                    </h3>
-
-                    <div id="upcoming-events" class="space-y-3">
-                        <p class="text-sm text-gray-400">
-                            No hay entregas próximas cargadas.
-                        </p>
+        <!-- Controles superiores -->
+        <div class="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            
+            <!-- Selector de Carrera -->
+            <form method="GET" action="{{ route('calendar.index') }}" class="w-full md:w-64">
+                <div x-data="{ open: false }" class="relative w-full">
+                    <button type="button" @click="open = !open" class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300">
+                        <span class="truncate flex-1 text-left">
+                            @if(isset($selectedCareer) && $selectedCareer)
+                                {{ $careers->firstWhere('id', $selectedCareer)->name ?? 'Seleccione una carrera' }}
+                            @else
+                                Seleccione una carrera
+                            @endif
+                        </span>
+                        <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute z-50 mt-2 w-full max-h-60 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-xl" style="display:none;">
+                        @if(isset($careers) && $careers->isNotEmpty())
+                            @foreach($careers as $career)
+                                <button type="submit" name="career_id" value="{{ $career->id }}" class="w-full truncate rounded-lg px-3 py-2 text-left text-sm hover:bg-violet-50 transition {{ (isset($selectedCareer) && $selectedCareer == $career->id) ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700' }}">{{ $career->name }}</button>
+                            @endforeach
+                        @else
+                            <div class="px-3 py-2 text-sm text-gray-500 italic">No hay carreras</div>
+                        @endif
                     </div>
                 </div>
+            </form>
 
-                <div class="rounded-3xl bg-white p-5 shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-800 mb-3">
-                        Resumen
-                    </h3>
-
-                    <div class="space-y-2 text-sm text-gray-600">
-                        <p>
-                            📚 Eventos cargados:
-                            <span id="events-count" class="font-semibold text-gray-800">0</span>
-                        </p>
-
-                        <p>
-                            📝 Próximas entregas:
-                            <span id="upcoming-count" class="font-semibold text-gray-800">0</span>
-                        </p>
-                    </div>
-                </div>
-
+            <!-- Toggle de Modo -->
+            <div class="flex bg-gray-200 p-1 rounded-xl shadow-inner font-nunito" id="calendar-mode-toggle">
+                <button type="button" data-mode="deliverables" class="mode-btn px-5 py-2 text-sm font-bold rounded-lg transition bg-white shadow text-violet-700">
+                    ✅ Entregas y Exámenes
+                </button>
+                <button type="button" data-mode="schedules" class="mode-btn px-5 py-2 text-sm font-bold rounded-lg transition text-gray-500 hover:text-gray-700">
+                    🏫 Horarios de Cursada
+                </button>
             </div>
+        </div>
 
+        <div class="rounded-3xl bg-white p-6 shadow-sm border border-gray-100">
+            <div id="calendar" class="min-h-[600px]"></div>
         </div>
     </div>
 
@@ -89,6 +88,19 @@
 
         .fc .fc-daygrid-day.fc-day-today {
             background: #F5F3FF !important;
+            box-shadow: inset 0 0 0 2px #C4B5FD !important; /* Border sutil interno */
+        }
+        
+        .fc th.fc-day-today .fc-col-header-cell-cushion {
+            background-color: #7C3AED;
+            color: white !important;
+            border-radius: 8px;
+            padding: 4px 12px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
         }
 
         .fc .fc-col-header-cell {
@@ -103,6 +115,21 @@
             color: #334155;
             font-size: 0.85rem;
             padding: 8px;
+        }
+        
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+            background-color: #7C3AED;
+            color: white !important;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4px;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
+            padding: 0;
         }
 
         .fc-theme-standard td,
@@ -155,34 +182,18 @@
                 console.error('Error al cargar eventos del calendario:', error);
             }
 
-            if (calendarEvents.length === 0) {
-                calendarEvents = [{
-                        title: 'Parcial Base de Datos',
-                        start: '2026-06-26',
-                        description: 'Repasar normalización, consultas SQL y relaciones.',
-                        subtasks: [
-                            'Leer unidad de normalización',
-                            'Resolver ejercicios de SQL',
-                            'Practicar joins y consultas'
-                        ]
-                    },
-                    {
-                        title: 'TP Programación',
-                        start: '2026-06-29',
-                        description: 'Completar módulo visual de tareas en Laravel.',
-                        subtasks: [
-                            'Revisar formulario de tareas',
-                            'Probar tarjetas reutilizables',
-                            'Validar navegación del dashboard'
-                        ]
-                    }
-                ];
-            }
+            // Validar que todos tengan extendedProps.type
+            calendarEvents = calendarEvents.map(ev => {
+                if (!ev.extendedProps) ev.extendedProps = {};
+                if (!ev.extendedProps.type) ev.extendedProps.type = 'task'; // fallback
+                return ev;
+            });
+
+            let currentEvents = calendarEvents;
 
             const calendar = new window.FullCalendar.Calendar(calendarEl, {
                 plugins: [
                     window.FullCalendar.dayGridPlugin,
-                    window.FullCalendar.timeGridPlugin,
                     window.FullCalendar.interactionPlugin,
                     window.FullCalendar.listPlugin
                 ],
@@ -197,13 +208,45 @@
                     list: 'Agenda'
                 },
 
+                height: 'auto',
+                contentHeight: 650,
+                
+                // Formato de hora en 24hs
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                displayEventEnd: true,
+                eventDisplay: 'block', // Fuerza a que todos los eventos tengan fondo de color (no solo puntitos)
+                
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                    right: 'dayGridMonth,dayGridWeek,listWeek'
                 },
 
-                events: calendarEvents,
+                // Renderizado personalizado de la tarjeta del evento
+                eventContent: function(arg) {
+                    let timeHtml = '';
+                    // Si el evento tiene hora (no es de todo el día), mostramos la franja
+                    if (arg.timeText) {
+                        timeHtml = `<div class="font-bold text-[10px] bg-black/20 rounded px-1.5 py-0.5 mb-1 inline-block">${arg.timeText}</div>`;
+                    }
+                    
+                    return {
+                        html: `
+                        <div class="p-1 w-full overflow-hidden leading-tight">
+                            ${timeHtml}
+                            <div class="font-semibold text-xs whitespace-normal">${arg.event.title}</div>
+                        </div>
+                        `
+                    };
+                },
+
+                events: function(info, successCallback, failureCallback) {
+                    successCallback(currentEvents);
+                },
 
                 eventClick: function(info) {
                     const modal = document.getElementById('task-modal');
@@ -237,29 +280,46 @@
 
             calendar.render();
 
-            eventsCountEl.textContent = calendarEvents.length;
-            upcomingCountEl.textContent = calendarEvents.length;
-
-            if (calendarEvents.length > 0) {
-                upcomingEventsEl.innerHTML = '';
-
-                calendarEvents.slice(0, 5).forEach(event => {
-                    const item = document.createElement('div');
-
-                    item.className = 'rounded-xl bg-violet-50 p-3';
-
-                    item.innerHTML = `
-                    <p class="font-semibold text-violeta-moderno">
-                        ${event.title}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                        ${event.start ?? 'Sin fecha'}
-                    </p>
-                `;
-
-                    upcomingEventsEl.appendChild(item);
+            // Filtrado interactivo por Modo
+            const modeBtns = document.querySelectorAll('.mode-btn');
+            let currentMode = 'deliverables'; // 'deliverables' | 'schedules'
+            
+            function updateMode(mode) {
+                currentMode = mode;
+                
+                // Actualizar UI de botones
+                modeBtns.forEach(btn => {
+                    if (btn.dataset.mode === mode) {
+                        btn.classList.add('bg-white', 'shadow', 'text-violet-700');
+                        btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+                    } else {
+                        btn.classList.remove('bg-white', 'shadow', 'text-violet-700');
+                        btn.classList.add('text-gray-500', 'hover:text-gray-700');
+                    }
                 });
+                
+                // Filtrar eventos
+                if (mode === 'deliverables') {
+                    currentEvents = calendarEvents.filter(ev => ['task', 'exam'].includes(ev.extendedProps.type));
+                    // Cambiar a vista mes por defecto si estábamos en semana
+                    if (calendar.view.type === 'dayGridWeek' && mode === 'deliverables') {
+                        calendar.changeView('dayGridMonth');
+                    }
+                } else if (mode === 'schedules') {
+                    currentEvents = calendarEvents.filter(ev => ev.extendedProps.type === 'class');
+                    // Cambiar a vista semana en bloque (dayGridWeek en lugar de timeGridWeek)
+                    calendar.changeView('dayGridWeek');
+                }
+                
+                calendar.refetchEvents();
             }
+            
+            modeBtns.forEach(btn => {
+                btn.addEventListener('click', () => updateMode(btn.dataset.mode));
+            });
+            
+            // Ejecutar modo inicial
+            updateMode('deliverables');
 
             document.getElementById('close-modal').addEventListener('click', () => {
                 document.getElementById('task-modal').classList.add('hidden');

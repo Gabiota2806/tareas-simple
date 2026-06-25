@@ -50,7 +50,7 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::post('/active-university', function (\Illuminate\Http\Request $request) {
         $request->validate(['university_id' => 'required|exists:universities,id']);
         session(['active_university_id' => $request->university_id]);
-        return back();
+        return redirect()->route('dashboard');
     })->name('active-university.set');
 
     // Buscador global
@@ -73,7 +73,7 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     
     // Vista Calendario
-    Route::view('/calendar', 'calendar.index')->name('calendar.index');
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     
     // API Dinámica - Tareas (CRUD Core y Kanban)
     Route::get('/tasks', [TaskController::class, 'index']);
