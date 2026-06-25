@@ -29,31 +29,53 @@
         $activeUniName = $activeUni ? addslashes($activeUni->acronym ?: $activeUni->name) : 'Sin Universidad';
     @endphp
 
+        <!-- Contenedor general reactivo con Alpine.js (Corregido con la clase 'flex') -->
     <div x-data="{
         userMenuOpen: false,
         universityOpen: false,
+        mobileSidebarOpen: false,
         sidebarExpanded: localStorage.getItem('sidebarExpanded') !== 'false',
         init() {
             this.$watch('sidebarExpanded', val => localStorage.setItem('sidebarExpanded', val));
         }
-    }" class="min-h-screen">
+    }" class="min-h-screen flex">
 
-        <!-- Sidebar -->
-        @include('layouts.navigation')
+        <!-- Fondo oscuro translúcido para Celular (Z-INDEX: 40) -->
+        <div x-show="mobileSidebarOpen" 
+             @click="mobileSidebarOpen = false" 
+             x-transition.opacity
+             class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm lg:hidden" 
+             style="display: none;"></div>
 
-        <!-- Main wrapper -->
-        <div class="transition-all duration-300" :class="sidebarExpanded ? 'lg:ml-64' : 'lg:ml-20'">
+        <!-- CONTENEDOR DE NAVEGACIÓN HÍBRIDO (ÚNICO) -->
+        <div :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" 
+             class="fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 shrink-0">
+            @include('layouts.navigation')
+        </div>
 
-            <!-- Top bar -->
+        <!-- MAIN WRAPPER (Restaurado): Empuja el contenido a la derecha en PC según el estado del menú y evita desajustes -->
+        <div class="flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300" 
+             :class="sidebarExpanded ? 'lg:pl-64' : 'lg:pl-20'">
+
+            <!-- Top bar (Aquí arranca directamente el Header) -->
             <header class="sticky top-0 z-30 border-b border-gray-100 bg-white/90 backdrop-blur-md">
-                <div class="flex h-20 items-center justify-between gap-4 px-6">
+                <div class="flex h-20 items-center justify-between gap-4 px-4 sm:px-6">
 
-                    <!-- Título dinámico de sección -->
-                    <div>
+                    <!-- Botón Hamburguesa (SOLO visible en móvil para desplegar el Sidebar) -->
+                    <div class="flex items-center gap-2 lg:hidden">
+                        <button @click="mobileSidebarOpen = !mobileSidebarOpen" class="rounded-xl p-2 text-gray-500 hover:bg-gray-100 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+
+                                       <!-- Título dinámico de sección (Corregido: oculto en móvil 'hidden', visible en PC 'md:block') -->
+                    <div class="hidden md:block lg:flex-none">
                         @isset($header)
                             {{ $header }}
                         @else
-                            <h1 class="text-lg font-semibold text-gray-800">
+                            <h1 class="text-base sm:text-lg font-semibold text-gray-800 truncate">
                                 @if (request()->routeIs('dashboard'))
                                     Inicio
                                 @elseif(request()->routeIs('subjects.show'))
@@ -76,8 +98,7 @@
                             </h1>
                         @endisset
                     </div>
-
-                    <!-- Buscador y filtros académicos -->
+                              <!-- Buscador (Oculto en móviles pequeños, se despliega a partir de tablets 'md:') -->
                     <div class="hidden md:block flex-1 max-w-xl mx-4">
                         <form action="{{ route('search.index') }}" method="GET" class="relative">
                             <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 hover:text-violeta-moderno">
@@ -92,18 +113,17 @@
                         </form>
                     </div>
 
-                    <!-- Right Controls (Universidad + Usuario) -->
-                    <div class="hidden md:flex items-center gap-3">
+                    <!-- Right Controls (Universidad + Usuario) -> Escalable en móvil y PC -->
+                    <div class="flex items-center gap-2 sm:gap-3">
                         
                         <!-- Universidad -->
-                        <div class="relative w-[180px]">
-                            <span
-                                class="absolute -top-2 left-4 bg-white px-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                                Universidad Activa
+                        <div class="relative w-[130px] sm:w-[180px]">
+                            <span class="absolute -top-2 left-4 bg-white px-1 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                                Universidad
                             </span>
 
-                            <button @click="universityOpen = !universityOpen"
-                                class="flex w-full items-center justify-between gap-2 rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno">
+  <button @click="universityOpen = !universityOpen"
+                                class="flex w-full items-center justify-between gap-1 sm:gap-2 rounded-2xl border border-violet-100 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno">
 
                                 <span class="truncate flex-1 text-left">{{ $activeUniName }}</span>
 
@@ -115,9 +135,10 @@
                             </button>
 
                             <div x-show="universityOpen" @click.away="universityOpen = false" x-transition
-                                class="absolute z-50 mt-2 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl right-0"
+                                class="absolute z-50 mt-2 w-48 sm:w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl right-0"
                                 style="display:none;">
 
+                                <!-- Formulario del Selector de Universidades (Restaurado y sanado) -->
                                 <form method="POST" action="{{ route('active-university.set') }}">
                                     @csrf
                                     @forelse($userUniversities as $uni)
@@ -141,75 +162,69 @@
                             </div>
                         </div>
 
-                    <!-- Usuario -->
-                    <div class="relative">
-                        <button @click="userMenuOpen = !userMenuOpen"
-                            class="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50">
-                            <span
-                                class="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 font-bold text-violeta-moderno">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            </span>
+                        <!-- Usuario -->
+                        <div class="relative">
+                            <button @click="userMenuOpen = !userMenuOpen"
+                                class="flex items-center gap-2 sm:gap-3 rounded-2xl border border-gray-100 bg-white px-3 sm:px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50">
+                                <span
+                                    class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-violet-100 text-xs sm:text-sm font-bold text-violeta-moderno">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </span>
 
-                            <span class="hidden sm:block">
-                                {{ Auth::user()->name }}
-                            </span>
+                                <span class="hidden sm:block">
+                                    {{ Auth::user()->name }}
+                                </span>
 
-                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
+                                <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
 
-                        <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition
-                            class="absolute right-0 z-50 mt-3 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
-                            style="display: none;">
-                            <div class="border-b border-gray-100 px-4 py-3">
-                                <p class="font-semibold text-gray-800">{{ Auth::user()->name }}</p>
-                                <p class="text-xs text-gray-400">{{ Auth::user()->email }}</p>
-                            </div>
+                            <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition
+                                class="absolute right-0 z-50 mt-3 w-48 sm:w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-xl"
+                                style="display: none;">
+                                <div class="border-b border-gray-100 px-4 py-3">
+                                    <p class="font-semibold text-gray-800 text-sm sm:text-base">{{ Auth::user()->name }}</p>
+                                    <p class="text-xs text-gray-400 truncate">{{ Auth::user()->email }}</p>
+                                </div>
 
-                            <a href="{{ route('profile.edit') }}"
-                                class="block rounded-xl px-4 py-3 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
-                                Perfil
-                            </a>
+                                <a href="{{ route('profile.edit') }}"
+                                    class="block rounded-xl px-4 py-3 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-violeta-moderno">
+                                    Perfil
+                                </a>
 
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
 
-                                <button type="submit"
-                                    class="w-full rounded-xl px-4 py-3 text-left text-sm text-red-500 transition hover:bg-red-50">
+                                    <button type="submit"
+                                        class="w-full rounded-xl px-4 py-3 text-left text-sm text-red-500 transition hover:bg-red-50">
                                     Cerrar sesión
-                                </button>
-                            </form>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
+                        <!-- End of Right Controls -->
                     </div>
-                    <!-- End of Right Controls -->
                 </div>
 
-                <!-- Buscador y filtros móvil -->
-                <div class="space-y-3 border-t border-gray-100 px-6 py-3 md:hidden">
-                    <form action="{{ route('search.index') }}" method="GET">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar..."
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
-                    </form>
-
-                    <form method="POST" action="{{ route('active-university.set') }}">
-                        @csrf
-                        <select name="university_id" onchange="this.form.submit()"
-                            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
-                            @forelse($userUniversities as $uni)
-                                <option value="{{ $uni->id }}" {{ $uni->id == $activeUniId ? 'selected' : '' }}>{{ $uni->acronym ?: $uni->name }}</option>
-                            @empty
-                                <option value="">Sin universidades</option>
-                            @endforelse
-                        </select>
+                <!-- Buscador inferior móvil -->
+                <div class="border-t border-gray-100 px-4 py-3 md:hidden bg-white">
+                    <form action="{{ route('search.index') }}" method="GET" class="relative">
+                        <button type="submit" class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar tareas o materias..."
+                            class="w-full rounded-xl border border-gray-200 bg-gray-50 py-2 pl-11 pr-4 text-sm text-gray-700 outline-none focus:border-violeta-moderno focus:ring-1 focus:ring-violeta-moderno">
                     </form>
                 </div>
             </header>
 
-            <!-- Page content -->
-            <main>
+                      <!-- Page content (Corregido: Fluye de forma natural y el fondo gris cubre el 100% de la pantalla) -->
+            <main class="p-4 sm:p-6 flex-1 bg-gray-100 min-h-[calc(100vh-80px)] w-full">
                 {{ $slot }}
             </main>
         </div>
