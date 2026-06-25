@@ -267,7 +267,7 @@
                     list: 'Agenda'
                 },
 
-                height: esMovil ? 380 : 'auto',
+                height: 'auto',
                 contentHeight: 650,
                 
                 // Formato de hora en 24hs
@@ -289,12 +289,8 @@
                     }
                 },
 
-                // BARRA SUPERIOR DINÁMICA: Compacta en móvil para evitar encimamientos, extendida en PC
-                headerToolbar: esMovil ? {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: 'today' // En móviles ocultamos el cambio de vistas para cuidar el espacio
-                } : {
+                // BARRA SUPERIOR DINÁMICA: Siempre disponible para cambiar de vista
+                headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,dayGridWeek,listWeek'
@@ -362,20 +358,8 @@
             function ajustarVistaCalendario(e) {
                 if (e.matches) {
                     calendar.changeView('listWeek');
-                    calendar.setOption('height', 380);
-                    calendar.setOption('headerToolbar', {
-                        left: 'prev,next',
-                        center: 'title',
-                        right: 'today'
-                    });
                 } else {
                     calendar.changeView('dayGridMonth');
-                    calendar.setOption('height', 'auto');
-                    calendar.setOption('headerToolbar', {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,dayGridWeek,listWeek' // Modificado timeGridWeek por dayGridWeek
-                    });
                 }
                 calendar.updateSize();
             }

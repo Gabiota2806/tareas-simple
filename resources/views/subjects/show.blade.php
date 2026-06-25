@@ -128,17 +128,25 @@
                     
                     <!-- COLUMNA: PENDIENTES -->
                     <div class="p-4 rounded-2xl flex flex-col border border-gray-200/50 shadow-sm transition-all duration-300 {{ $groupBy === 'none' ? 'bg-gray-100/70' : $groupConfig['bg'] }}"
-                         :class="colPendiente ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
+                         :class="colPendiente ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none lg:items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
                         
-                        <h3 class="font-bold text-gray-700 text-sm mb-4 flex items-center justify-between cursor-pointer w-full" @click="toggleCol('colPendiente')">
-                            <div class="flex items-center gap-2" x-show="colPendiente">
+                        <h3 class="font-bold text-gray-700 text-sm flex items-center justify-between cursor-pointer w-full transition-all" 
+                            :class="colPendiente ? 'mb-4' : 'mb-0 lg:mb-4'" 
+                            @click="toggleCol('colPendiente')">
+                            
+                            <div class="flex items-center gap-2" :class="!colPendiente ? 'lg:hidden' : ''">
                                 <span>📋 Pendientes</span>
                                 <span class="bg-white/60 text-gray-600 text-xs px-2 py-1 rounded-full count-badge">
                                     {{ $tasks->where('status', 'pending')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey))->count() }}
                                 </span>
                             </div>
+                            
                             <span x-show="!colPendiente" class="hidden lg:block rotate-90 origin-left whitespace-nowrap translate-y-16 ml-3 text-gray-500 tracking-widest uppercase text-xs">Pendientes</span>
-                            <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 transition flex-shrink-0" :class="colPendiente ? '' : 'lg:-rotate-90'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            
+                            <!-- Flecha: en móvil rota para indicar acordeón, en PC rota para indicar panel lateral -->
+                            <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 transition-transform duration-300 flex-shrink-0" 
+                                 :class="colPendiente ? '-rotate-90 lg:rotate-0' : 'rotate-180 lg:-rotate-90'" 
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </h3>
                         
                         <div x-show="colPendiente" x-transition.opacity class="space-y-3 min-h-[150px] flex-1 contenedor-sortable" data-estado="pendiente">
@@ -153,17 +161,24 @@
 
                     <!-- COLUMNA: EN PROCESO -->
                     <div class="p-4 rounded-2xl flex flex-col border border-gray-200/50 shadow-sm transition-all duration-300 {{ $groupBy === 'none' ? 'bg-gray-100/70' : $groupConfig['bg'] }}"
-                         :class="colProceso ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
+                         :class="colProceso ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none lg:items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
                         
-                        <h3 class="font-bold text-blue-700 text-sm mb-4 flex items-center justify-between cursor-pointer w-full" @click="toggleCol('colProceso')">
-                            <div class="flex items-center gap-2" x-show="colProceso">
+                        <h3 class="font-bold text-blue-700 text-sm flex items-center justify-between cursor-pointer w-full transition-all" 
+                            :class="colProceso ? 'mb-4' : 'mb-0 lg:mb-4'" 
+                            @click="toggleCol('colProceso')">
+                            
+                            <div class="flex items-center gap-2" :class="!colProceso ? 'lg:hidden' : ''">
                                 <span>⚡ En progreso</span>
                                 <span class="bg-white/60 text-blue-700 text-xs px-2 py-1 rounded-full count-badge">
                                     {{ $tasks->where('status', 'in_progress')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey))->count() }}
                                 </span>
                             </div>
+                            
                             <span x-show="!colProceso" class="hidden lg:block rotate-90 origin-left whitespace-nowrap translate-y-16 ml-3 text-blue-400 tracking-widest uppercase text-xs">Progreso</span>
-                            <svg class="w-4 h-4 text-blue-400 hover:text-blue-600 transition flex-shrink-0" :class="colProceso ? '' : 'lg:-rotate-90'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            
+                            <svg class="w-4 h-4 text-blue-400 hover:text-blue-600 transition-transform duration-300 flex-shrink-0" 
+                                 :class="colProceso ? '-rotate-90 lg:rotate-0' : 'rotate-180 lg:-rotate-90'" 
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </h3>
                         
                         <div x-show="colProceso" x-transition.opacity class="space-y-3 min-h-[150px] flex-1 contenedor-sortable" data-estado="proceso">
@@ -178,17 +193,24 @@
 
                     <!-- COLUMNA: COMPLETADAS -->
                     <div class="p-4 rounded-2xl flex flex-col border border-gray-200/50 shadow-sm transition-all duration-300 {{ $groupBy === 'none' ? 'bg-gray-100/70' : $groupConfig['bg'] }}"
-                         :class="colCompletada ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
+                         :class="colCompletada ? 'flex-1 min-w-[300px]' : 'w-full lg:w-16 flex-none lg:items-center overflow-hidden cursor-pointer hover:bg-gray-200/50'">
                         
-                        <h3 class="font-bold text-green-700 text-sm mb-4 flex items-center justify-between cursor-pointer w-full" @click="toggleCol('colCompletada')">
-                            <div class="flex items-center gap-2" x-show="colCompletada">
+                        <h3 class="font-bold text-green-700 text-sm flex items-center justify-between cursor-pointer w-full transition-all" 
+                            :class="colCompletada ? 'mb-4' : 'mb-0 lg:mb-4'" 
+                            @click="toggleCol('colCompletada')">
+                            
+                            <div class="flex items-center gap-2" :class="!colCompletada ? 'lg:hidden' : ''">
                                 <span>✅ Completadas</span>
                                 <span class="bg-white/60 text-green-700 text-xs px-2 py-1 rounded-full count-badge">
                                     {{ $tasks->where('status', 'completed')->when($groupBy === 'priority', fn($q) => $q->where('priority', $groupKey))->count() }}
                                 </span>
                             </div>
+                            
                             <span x-show="!colCompletada" class="hidden lg:block rotate-90 origin-left whitespace-nowrap translate-y-16 ml-3 text-green-500 tracking-widest uppercase text-xs">Completadas</span>
-                            <svg class="w-4 h-4 text-green-500 hover:text-green-700 transition flex-shrink-0" :class="colCompletada ? '' : 'lg:-rotate-90'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            
+                            <svg class="w-4 h-4 text-green-500 hover:text-green-700 transition-transform duration-300 flex-shrink-0" 
+                                 :class="colCompletada ? '-rotate-90 lg:rotate-0' : 'rotate-180 lg:-rotate-90'" 
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </h3>
                         
                         <div x-show="colCompletada" x-transition.opacity class="space-y-3 min-h-[150px] flex-1 contenedor-sortable" data-estado="completada">
