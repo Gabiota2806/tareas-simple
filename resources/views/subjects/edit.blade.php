@@ -53,13 +53,42 @@
                             <label for="approval_type" class="block text-sm font-bold text-gray-700 mb-1 font-nunito">
                                 Aprobación <span class="text-xs text-gray-400 font-normal">(Opcional)</span>
                             </label>
-                            <select id="approval_type" name="approval_type"
-                                   class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
-                                <option value="">Sin definir</option>
-                                <option value="promocional" {{ old('approval_type', $subject->approval_type) == 'promocional' ? 'selected' : '' }}>Promocional</option>
-                                <option value="regular" {{ old('approval_type', $subject->approval_type) == 'regular' ? 'selected' : '' }}>Regular (Con Final)</option>
-                                <option value="libre" {{ old('approval_type', $subject->approval_type) == 'libre' ? 'selected' : '' }}>Libre</option>
-                            </select>
+                            <div x-data="{ 
+                                open: false, 
+                                selected: '{{ old('approval_type', $subject->approval_type ?? '') }}', 
+                                options: {
+                                    '': 'Sin definir',
+                                    'promocional': 'Promocional',
+                                    'regular': 'Regular (Con Final)',
+                                    'libre': 'Libre'
+                                }
+                            }" class="relative w-full font-nunito">
+                                <input type="hidden" name="approval_type" x-model="selected">
+                                
+                                <button type="button" @click="open = !open"
+                                    class="flex w-full items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:border-violeta-moderno"
+                                    :class="selected === '' ? 'text-gray-400' : 'text-gray-800'">
+                                    
+                                    <span x-text="options[selected] || 'Sin definir'" class="truncate flex-1 text-left"></span>
+
+                                    <svg class="h-4 w-4 shrink-0 text-violeta-moderno" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <div x-show="open" @click.away="open = false" x-transition
+                                    class="absolute z-50 mt-2 w-full rounded-lg border border-gray-100 bg-white p-2 shadow-xl"
+                                    style="display:none;">
+                                    
+                                    <template x-for="(label, value) in options" :key="value">
+                                        <button type="button" @click="selected = value; open = false" 
+                                            class="w-full truncate rounded-md px-3 py-2 text-left text-sm hover:bg-violet-50 transition"
+                                            :class="selected === value ? 'bg-violet-50 text-violeta-moderno font-bold' : 'text-gray-700'"
+                                            x-text="label">
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="flex-1">
@@ -68,6 +97,70 @@
                             </label>
                             <input type="number" step="0.1" min="0" max="10" id="final_grade" name="final_grade" value="{{ old('final_grade', $subject->final_grade) }}" placeholder="Ej: 9.5"
                                    class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-800 shadow-sm placeholder:text-gray-400 font-nunito focus:border-violet-400 focus:ring-violet-400 transition">
+                        </div>
+                    </div>
+
+                    <!-- Horarios de cursada (Schedules) -->
+                    <input type="hidden" name="update_schedules" value="1">
+                    <div x-data="{
+                        schedules: {{ $subject->schedules->toJson() }}.map(s => ({
+                            day_of_week: s.day_of_week,
+                            classroom: s.classroom || '',
+                            start_time: s.start_time ? s.start_time.substring(0, 5) : '',
+                            end_time: s.end_time ? s.end_time.substring(0, 5) : ''
+                        })),
+                        days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                        addSchedule() {
+                            this.schedules.push({ day_of_week: 1, start_time: '08:00', end_time: '10:00', classroom: '' });
+                        },
+                        removeSchedule(index) {
+                            this.schedules.splice(index, 1);
+                        }
+                    }">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-bold text-gray-700 font-nunito">Horarios de cursada</label>
+                            <button type="button" @click="addSchedule" class="text-xs font-bold text-violet-600 hover:text-violet-800 transition bg-violet-50 hover:bg-violet-100 px-2 py-1 rounded">
+                                + Añadir horario
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <template x-for="(schedule, index) in schedules" :key="index">
+                                <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg relative">
+                                    <button type="button" @click="removeSchedule(index)" class="absolute top-2 right-2 text-red-400 hover:text-red-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                    
+                                    <div class="grid grid-cols-2 gap-3 mb-3 pr-6">
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Día</label>
+                                            <select x-model="schedule.day_of_week" :name="`schedules[${index}][day_of_week]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
+                                                <template x-for="(day, dIndex) in days" :key="dIndex">
+                                                    <option :value="dIndex" x-text="day"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Aula (Opcional)</label>
+                                            <input type="text" x-model="schedule.classroom" :name="`schedules[${index}][classroom]`" placeholder="Ej: Aula 10" class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Inicio</label>
+                                            <input type="time" x-model="schedule.start_time" :name="`schedules[${index}][start_time]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] uppercase font-bold text-gray-500 mb-1">Fin</label>
+                                            <input type="time" x-model="schedule.end_time" :name="`schedules[${index}][end_time]`" required class="w-full text-sm rounded-md border border-gray-300 py-1.5 px-2 focus:ring-violet-400 focus:border-violet-400 bg-white">
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <template x-if="schedules.length === 0">
+                                <p class="text-xs text-gray-400 italic text-center py-2 bg-gray-50 rounded-lg border border-gray-200">Sin horarios definidos. No aparecerán en el calendario.</p>
+                            </template>
                         </div>
                     </div>
 

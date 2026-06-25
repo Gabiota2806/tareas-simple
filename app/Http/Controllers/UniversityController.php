@@ -121,11 +121,11 @@ class UniversityController extends Controller
             // Auto-seleccionar en la sesión
             session(['active_university_id' => $university->id]);
             session(['active_university_name' => $university->name]);
-            return back();
+            return redirect()->route('dashboard');
         }
 
-        // Si ya es favorita, no hace nada
-        return back();
+        // Si ya es favorita, redirige de todas formas
+        return redirect()->route('dashboard');
     }
 }
 

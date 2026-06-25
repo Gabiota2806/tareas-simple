@@ -30,6 +30,36 @@
     editExamType: '{{ addslashes($examType) }}',
     editGrade: '{{ $grade }}',
     
+    dropdownOpen: false,
+    statuses: {
+        'pending': '{{ in_array($type, ["parcial", "final"]) ? "⏳ Pendiente" : "📋 Pendiente" }}',
+        'in_progress': '{{ in_array($type, ["parcial", "final"]) ? "📖 Estudiando" : "⚡ En progreso" }}',
+        'completed': '{{ in_array($type, ["parcial", "final"]) ? "✅ Rendido" : "✅ Completada" }}'
+    },
+    
+    changeStatus(status) {
+        this.currentStatus = status;
+        this.dropdownOpen = false;
+        window.apiFetch(`/tasks/{{ $id }}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: status })
+        }).then(() => {
+            const cardElement = document.querySelector(`[data-id='{{ $id }}']`);
+            if (cardElement) {
+                const targetEstado = status === 'in_progress' ? 'proceso' : (status === 'completed' ? 'completada' : 'pendiente');
+                const row = cardElement.closest('.swimlane-row');
+                if (row) {
+                    const targetContainer = row.querySelector(`[data-estado='${targetEstado}']`);
+                    if (targetContainer) {
+                        targetContainer.appendChild(cardElement);
+                        window.dispatchEvent(new Event('actualizar-contadores'));
+                    }
+                }
+            }
+        }).catch(err => console.error(err));
+    },
+
     async saveChanges() {
         try {
             let finalStatus = this.currentStatus;
@@ -57,7 +87,7 @@
             location.reload();
         } catch (err) { console.error(err); }
     }
-}" 
+}"  
 @status-updated="currentStatus = $event.detail.newStatus">
 
     <div @click="open = true"
@@ -146,7 +176,7 @@
         <div x-show="open" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
             style="display:none;">
 
-            <div @click.away="open = false" class="w-full max-w-2xl rounded-3xl bg-white p-8 shadow-2xl">
+            <div @click.away="open = false" class="w-full max-w-2xl rounded-3xl bg-white p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
 
             <div class="flex items-center justify-between">
 
@@ -161,36 +191,7 @@
                     </button>
 
                     <!-- Select de estado reactivo (Jira style) -->
-                    <div x-show="!isEditing" x-data="{ 
-                        dropdownOpen: false,
-                        statuses: {
-                            'pending': '{{ in_array($type, ["parcial", "final"]) ? "⏳ Pendiente" : "📋 Pendiente" }}',
-                            'in_progress': '{{ in_array($type, ["parcial", "final"]) ? "📖 Estudiando" : "⚡ En progreso" }}',
-                            'completed': '{{ in_array($type, ["parcial", "final"]) ? "✅ Rendido" : "✅ Completada" }}'
-                        },
-                        changeStatus(status) {
-                            this.currentStatus = status;
-                            this.dropdownOpen = false;
-                            window.apiFetch(`/tasks/{{ $id }}`, {
-                                method: 'PATCH',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ status: status })
-                            }).then(() => {
-                                let targetColId = 'col-pendiente';
-                                if (status === 'in_progress') targetColId = 'col-proceso';
-                                if (status === 'completed') targetColId = 'col-completada';
-                                
-                                const cardElement = document.querySelector(`[data-id='{{ $id }}']`);
-                                if(cardElement && document.getElementById(targetColId)) {
-                                    document.getElementById(targetColId).appendChild(cardElement);
-                                    
-                                    document.getElementById('count-pendiente').innerText = document.getElementById('col-pendiente').children.length;
-                                    document.getElementById('count-proceso').innerText = document.getElementById('col-proceso').children.length;
-                                    document.getElementById('count-completada').innerText = document.getElementById('col-completada').children.length;
-                                }
-                            }).catch(err => console.error(err));
-                        }
-                    }" class="relative">
+                    <div x-show="!isEditing" class="relative">
                         <button type="button" @click="dropdownOpen = !dropdownOpen"
                             class="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-700 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno w-36">
                             <span x-text="statuses[currentStatus]"></span>
