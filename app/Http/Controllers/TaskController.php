@@ -124,6 +124,14 @@ class TaskController extends Controller
             $validated['status'] = $validated['is_completed'] ? 'completed' : 'pending';
         }
 
+        if (isset($validated['status'])) {
+            if ($validated['status'] === 'completed' && $task->status !== 'completed') {
+                $validated['completed_at'] = now();
+            } elseif ($validated['status'] !== 'completed') {
+                $validated['completed_at'] = null;
+            }
+        }
+
         $task->update($validated);
 
         return response()->json([

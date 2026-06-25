@@ -7,6 +7,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\AcademicRecordController;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,9 @@ Route::middleware(['auth', 'verified', 'ensure.university'])->group(function () 
     Route::get('/subjects/create', [SubjectController::class, 'create'])->name('subjects.create');
     Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
     Route::get('/subjects/{subject}', [SubjectController::class, 'show'])->name('subjects.show');
+
+    // Historial
+    Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
     Route::get('/subjects/{subject}/edit', [SubjectController::class, 'edit'])->name('subjects.edit');
     Route::patch('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
     Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');

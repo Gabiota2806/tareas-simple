@@ -25,7 +25,7 @@
                         $subjectsQuery->where('career_id', $selectedCareer);
                     }
 
-                    $activeSubjects = $subjectsQuery->get();
+                    $activeSubjects = $subjectsQuery->orderBy('name', 'asc')->orderBy('id', 'asc')->get();
                 @endphp
 
                 <div>
@@ -97,7 +97,7 @@
                                     {{ $subject->name }}
                                 </h4>
                                 <p class="mt-1 text-sm text-gray-500">
-                                    {{ $subject->tasks()->active()->where('status', '!=', 'completed')->whereIn('task_type', ['normal', 'tp'])->count() }} tareas pendientes
+                                    {{ $subject->tasks()->roots()->active()->visible()->where('status', '!=', 'completed')->whereIn('task_type', ['normal', 'tp'])->count() }} tareas pendientes
                                 </p>
                             </div>
                         </div>

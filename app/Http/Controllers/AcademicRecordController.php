@@ -22,10 +22,15 @@ class AcademicRecordController extends Controller
             ->whereHas('career', function($q) use ($activeUniId) {
                 $q->where('university_id', $activeUniId);
             })
+            ->orderBy('name', 'asc')
+            ->orderBy('id', 'asc')
             ->with(['tasks' => function($q) {
                 $q->active()
+                  ->visible()
                   ->whereIn('task_type', ['parcial', 'final'])
-                  ->orderBy('due_date', 'asc');
+                  ->orderBy('due_date', 'asc')
+                  ->orderBy('id', 'asc')
+                  ->with('nestedSubtasks');
             }]);
 
         if ($selectedCareer) {

@@ -2,16 +2,21 @@
     <div class="flex h-full flex-col px-4 py-6 overflow-hidden">
         
         <!-- HEADER / LOGO -->
-        <div class="flex items-center justify-between mb-8">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
-                <span x-show="sidebarExpanded" x-transition.opacity.duration.300ms class="text-2xl font-bold text-violeta-moderno whitespace-nowrap">
+        <div class="flex items-center justify-between mb-8 transition-all duration-300 flex-row">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 overflow-hidden">
+                <img src="{{ asset('images/logo_unitask.jpeg') }}" alt="UniTask Logo" 
+                     class="rounded-xl shadow-sm object-cover shrink-0 transition-all duration-300"
+                     :class="sidebarExpanded ? 'w-10 h-10' : 'w-7 h-7'">
+                <span x-show="sidebarExpanded" x-transition.opacity.duration.300ms class="text-2xl font-bold text-violeta-moderno whitespace-nowrap tracking-tight ml-1">
                     UniTask
                 </span>
             </a>
             
-            <button @click="sidebarExpanded = !sidebarExpanded" class="text-gray-400 hover:text-violeta-moderno transition p-1.5 rounded-lg hover:bg-violet-50 shrink-0" :title="sidebarExpanded ? 'Contraer menú' : 'Expandir menú'">
-                <svg x-show="sidebarExpanded" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
-                <svg x-show="!sidebarExpanded" style="display:none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
+            <button @click="sidebarExpanded = !sidebarExpanded" 
+                    class="text-gray-400 hover:text-violeta-moderno transition p-1 rounded-xl hover:bg-violet-50 shrink-0 border border-transparent hover:border-violet-100" 
+                    :title="sidebarExpanded ? 'Contraer menú' : 'Expandir menú'">
+                <svg x-show="sidebarExpanded" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+                <svg x-show="!sidebarExpanded" style="display:none;" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
             </button>
         </div>
 
@@ -54,6 +59,14 @@
                 :title="!sidebarExpanded ? 'Calendario' : ''">
                 <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span x-show="sidebarExpanded" x-transition.opacity.duration.300ms class="whitespace-nowrap">Calendario</span>
+            </a>
+
+            <a href="{{ route('historial.index') }}"
+                class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition
+                {{ request()->routeIs('historial.*') ? 'bg-violet-100 text-violeta-moderno' : 'text-gray-600 hover:bg-gray-50 hover:text-violeta-moderno' }}"
+                :title="!sidebarExpanded ? 'Historial' : ''">
+                <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span x-show="sidebarExpanded" x-transition.opacity.duration.300ms class="whitespace-nowrap">Historial</span>
             </a>
         </nav>
 
