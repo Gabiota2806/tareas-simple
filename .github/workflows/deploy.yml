@@ -16,7 +16,7 @@ jobs:
     - name: 🛠️ Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.3'
         
     - name: 📦 Install Composer Dependencies
       run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
@@ -43,6 +43,7 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
+          **/vendor/**
           .env.example
           tests/**
           storage/framework/cache/data/**
