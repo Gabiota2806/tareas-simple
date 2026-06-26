@@ -715,7 +715,7 @@
                 <div class="flex gap-4">
                     <div class="flex-1">
                         <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Tarea</label>
-                        <div x-data="{ open: false, options: {'normal': 'Normal', 'tp': 'Trabajo Práctico', 'parcial': 'Parcial', 'final': 'Final'} }" class="relative w-full">
+                        <div x-data="{ open: false, get options() { return ['parcial', 'final'].includes(editType) ? {'parcial': 'Parcial', 'final': 'Final'} : {'normal': 'Normal', 'tp': 'Trabajo Práctico'}; } }" class="relative w-full">
                             <button type="button" @click="open = !open"
                                 class="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 shadow-sm transition hover:border-violet-300 focus:outline-none focus:ring-1 focus:ring-violeta-moderno focus:bg-white">
                                 <span x-text="options[editType]"></span>

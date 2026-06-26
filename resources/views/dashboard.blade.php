@@ -90,7 +90,7 @@
                         </div>
                     </form>
 
-                    <a href="{{ route('tasks.create') }}"
+                    <a href="{{ route('tasks.create', ['allowed_types' => 'tasks']) }}"
                         class="inline-flex items-center justify-center gap-2 rounded-xl bg-violeta-moderno px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md w-full sm:w-auto">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -137,7 +137,7 @@
 
         <!-- Botón flotante móvil -->
         <div class="fixed bottom-6 right-6 z-50 lg:hidden">
-            <a href="{{ route('tasks.create') }}"
+            <a href="{{ route('tasks.create', ['allowed_types' => 'tasks']) }}"
                 class="flex h-14 w-14 items-center justify-center rounded-xl bg-violeta-moderno text-2xl font-bold text-white shadow-lg transition hover:bg-opacity-90 active:scale-95">
                 +
             </a>
