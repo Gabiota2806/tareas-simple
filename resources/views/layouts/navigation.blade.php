@@ -9,7 +9,7 @@
         <!-- HEADER / LOGO (Corregido: visible en móvil 'flex', y el texto responde dinámicamente en PC) -->
         <div class="flex items-center justify-between mb-6 lg:mb-8 pt-2 lg:pt-0 transition-all duration-300 flex-row">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2 overflow-hidden">
-                <img src="{{ asset('images/logo_unitask.jpeg') }}" alt="UniTask Logo" 
+                <img src="{{ asset('images/logo_unitask_2.jpeg') }}" alt="UniTask Logo" 
                      class="rounded-xl shadow-sm object-cover shrink-0 transition-all duration-300"
                      :class="sidebarExpanded ? 'w-10 h-10' : 'w-7 h-7'">
                 <!-- Cambiado: En celular siempre visible, en PC depende de sidebarExpanded -->
