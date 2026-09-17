@@ -26,6 +26,7 @@ Este skill guía a Antigravity en la planificación, entrevista y creación auto
 * Las credenciales y variables de entorno (`JIRA_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT_KEY`) se cargan exclusivamente desde el archivo `.env.jira` ubicado en la raíz del proyecto.
 * Tras el OK de Gabriel:
   1. Crear la HU vía `POST /rest/api/3/issue` asignando Épica (`parent`), Prioridad y Story Points (`customfield_10016`).
-  2. Crear cada Subtarea vinculada al ID de la HU padre con sus Story Points en `customfield_10016`.
-  3. **Regla de Oro**: La descripción de la tarjeta debe ser limpia y contener SOLO la narrativa y criterios de aceptación. NO ensuciar la descripción con metadatos (Story Points, Épica, Sprint).
-  4. Compartir los enlaces directos a las tarjetas creadas en Jira Cloud a Gabriel.
+  2. Asignar los Criterios de Aceptación en su campo dedicado `customfield_10108` ("Criterios de Aceptación") en formato Documento de Atlassian (ADF), dejando el campo `description` exclusivo para la narrativa de negocio (*"Como... Quiero... Para..."*).
+  3. Crear cada Subtarea vinculada al ID de la HU padre con sus Story Points en `customfield_10016`.
+  4. **Regla de Oro**: La descripción de la tarjeta debe ser limpia y contener SOLO la narrativa de negocio. NUNCA ensuciar la descripción con metadatos (Story Points, Épica, Sprint) ni duplicar allí los Criterios de Aceptación si el campo dedicado está disponible.
+  5. Compartir los enlaces directos a las tarjetas creadas en Jira Cloud a Gabriel.
