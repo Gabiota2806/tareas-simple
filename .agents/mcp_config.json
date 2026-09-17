@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "bash",
+            "args": [
+                "-c",
+                "cd /home/gabrielp2806/Documentos/Desarrollo/UniTask/tareas-simple && ./vendor/bin/sail artisan boost:mcp"
+            ]
+        }
+    }
+}

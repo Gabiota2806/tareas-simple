@@ -1,8 +1,11 @@
 *.log
 .DS_Store
 .env
+.env.jira
 .env.backup
 .env.production
+/.tunnel/
+/bin/
 .phpactor.json
 .phpunit.result.cache
 /.cursor/
@@ -23,5 +26,4 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-docker-compose.yml
 /data

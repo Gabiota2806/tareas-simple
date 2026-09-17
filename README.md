@@ -13,15 +13,65 @@ El sistema permite a los estudiantes:
 
 ---
 
-## 🚀 ¿Cómo levantar el proyecto localmente?
+## ⚙️ Puesta en Marcha (Entorno Docker & Laravel Sail)
 
-Para ejecutar UniTask en tu entorno local de desarrollo, asegúrate de contar con **PHP 8.3 o superior**, **Composer**, **Node.js / NPM** y **MySQL**. Luego, sigue estos pasos:
+Este proyecto está completamente dockerizado siguiendo la arquitectura y metodología de desarrollo ágil (Laravel Sail, MariaDB, Redis y phpMyAdmin), eliminando la necesidad de tener PHP, Composer o Node instalados en tu equipo host.
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd tareas-simple
-   ```
+### Requisitos Previos
+* **Git** instalado en el sistema.
+* **Docker** y **Docker Compose** en ejecución.
+
+---
+
+### 🚀 Inicialización desde Cero (Nuevo Dispositivo / Onboarding)
+
+Para clonar y dejar el proyecto 100% operativo en un solo paso:
+
+```bash
+./setup.sh
+```
+
+El script `./setup.sh` automatiza toda la secuencia:
+1. Comprueba que el demonio de Docker esté activo.
+2. Crea el archivo `.env` a partir de `.env.example`.
+3. Instala dependencias de Composer mediante un contenedor temporal (sin necesidad de PHP en el host).
+4. Levanta los contenedores en segundo plano (`./sail up -d`) con MariaDB, Redis y phpMyAdmin.
+5. Genera la clave de cifrado de la aplicación (`APP_KEY`).
+6. Ejecuta las migraciones y puebla la base de datos con los datos de prueba (`migrate:fresh --seed`).
+7. Instala las dependencias de Node y compila los assets con Vite (`npm install && npm run build`).
+
+**Acceso a los servicios:**
+- 📍 **Aplicación web**: [http://localhost](http://localhost)
+- 📍 **phpMyAdmin**: [http://localhost:8080](http://localhost:8080)
+- 👤 **Credenciales de prueba**: `test@example.com` / `password`
+
+---
+
+### 💻 Desarrollo Diario
+
+Una vez inicializado, para comenzar tu jornada de desarrollo ejecuta:
+
+```bash
+./dev.sh
+```
+
+El script `./dev.sh`:
+- Verifica y asegura que los contenedores de Sail estén activos en segundo plano.
+- Inicia el servidor de desarrollo en caliente de Vite (`./sail npm run dev`).
+
+---
+
+### 🛠️ Comandos Útiles con Sail
+
+Puedes usar el wrapper ejecutable `./sail` directamente:
+- `./sail artisan <comando>`: Ejecuta comandos de Artisan.
+- `./sail npm <comando>`: Ejecuta comandos de Node/NPM.
+- `./sail composer <comando>`: Ejecuta comandos de Composer.
+- `./sail stop`: Detiene todos los contenedores.
+
+---
+
+## 💻 Alternativa: Instalación Manual Tradicional (Sin Docker)
 
 2. **Instalar dependencias del Backend (PHP):**
    ```bash
